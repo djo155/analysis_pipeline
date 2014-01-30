@@ -1161,6 +1161,11 @@ ls ${OUTPUTDIR}/${MODEL_NAME}.spm/
 
                     ${ANALYSIS_PIPE_DIR}/analysis_pipeline_createSPM_batch_script.sh ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/run_job_contrast.m ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/job_contrast.m
 
+#run brians contrast function
+echo "${ANALYSIS_PIPE_DIR}/bin/osx/spm_contrast -c $SPM_CON_FILE -o  ${OUTPUTDIR}/${MODEL_NAME}.spm">> ${OUTPUTDIR}/log.txt
+ ${ANALYSIS_PIPE_DIR}/bin/osx/spm_contrast -c $SPM_CON_FILE -o  ${OUTPUTDIR}/${MODEL_NAME}.spm/
+
+
                     #--run the matlab script
                     CURDIR=`pwd`
                     cd ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs

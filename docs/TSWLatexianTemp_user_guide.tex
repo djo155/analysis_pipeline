@@ -1,0 +1,42 @@
+\documentclass[]{article}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{enumitem}
+\setdescription{leftmargin=\parindent,labelindent=\parindent,style=sameline}
+
+\begin{document}
+
+\title{Analysis Pipleline User's guide}
+\author{Brian Patenaude}
+\date{Today}
+\maketitle
+
+\begin{section}{Quick Cheat Sheet}
+The basic functions are those which I've found that most people use most frequently. They've been take from the scripts in from the various studies. For clarity I've used the image extensions in the examples, but they are not necessary.
+\begin{subsection}{Common options}
+%\setlist[itemize]{leftmargin=2in}
+\begin{description}
+	\item [-func\_data] :  Proceeded by the 4D functional data (EPI or spiral).
+	\item [ -t1]  : Proceeded by the highres structural image (T1 weighted). 
+	\item [-reg\_info] : Optional, specified to use existing structural analysis folder. Proceeded by the structural analysis directory.
+	\item [-design] : Proceeded by a Matlab .mat file of the design matrix. The internal structure is that specified by SPM.
+	\item [-spm\_contrast] : Proceeded by an SPM contrast file (.m file).
+	\item [-output\_extension] : Proceed by the extension that will be used for the output. It combined the name specified by 
+						\hspace*{1cm} {\bf -func\_data} and append a "." plus whatever extensions. "+"  characters will be prepended in the case the directory 
+						\hspace*{1cm}exists. 
+	\item[-model\_name {\it name}] : Proceed by a name. A folder, model\_name.spm will be created in the output directory, this contains the final SPM analysis.
+	\item[-motion] : No arguments. This options indicates to the pipeline to include motion regressors first level model.
+	\item[-tr] : Proceeded by a number. The number is the TR from the acquisition sequence in seconds(time between time points).
+	\item[-deleteVolumes] : Proceeded by an integer. The number of volumes to be deleted from the beginning of the time series.
+\end{description}
+\end{subsection}
+\begin{subsection}{Run a basic first level analysis}
+\
+{\it \bf analysis\_pipeline.sh}   {\bf -func\_data} fmri\_4D.nii.gz  {\bf -t1} structural\_image.nii.gz  {\bf -reg\_info} structural\_image.struct\_extension   \\
+\hspace*{1.3in} {\bf -design} spm\_design\_matrix.mat  {\bf -spm\_contrast}  spm\_contrast\_file.m  {\bf -model\_name} name\_of\_model   \\
+\hspace*{1.3in} {\bf -output\_extension} analysis\_directory\_extension  {\bf -motion}  {\bf -tr} TR  \\
+\hspace*{1.3in}{\bf -deleteVolumes} Number\_of\_Volumes\_to\_Delete
+\end{subsection}
+
+\end{section}
+
+\end{document}
