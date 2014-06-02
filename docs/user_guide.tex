@@ -16,13 +16,13 @@ The basic functions are those which I've found that most people use most frequen
 %\setlist[itemize]{leftmargin=2in}
 \begin{description}
 	\item [-func\_data {\it func\_4D}] :  Proceeded by the 4D functional data (EPI or spiral).
-	\item [ -t1 {\it im_t1}]  : Proceeded by the highres structural image (T1 weighted). 
+	\item [ -t1 {\it im\_t1}]  : Proceeded by the highres structural image (T1 weighted). 
 	\item [-reg\_info] : Optional, specified to use existing structural analysis folder. Proceeded by the structural analysis directory.
 	\item [-design] : Proceeded by a Matlab .mat file of the design matrix. The internal structure is that specified by SPM.
 	\item [-spm\_contrast] : Proceeded by an SPM contrast file (.m file).
-	\item [-output\_extension {\it Analysis}] : Proceed by the extension that will be used for the output. It combined the name specified by 
-						\hspace*{1cm} {\bf -func\_data} and append a "." plus whatever extensions. "+"  characters will be prepended in the case the directory 
-						\hspace*{1cm}exists. e.g {\it func\_4D.Analysis}.
+	\item [-output\_extension {\it Analysis}] : Proceed by the extension that will be used for the output. It combined the name  
+						\hspace*{1cm} specified by {\bf -func\_data} and append a "." plus whatever extensions. "+"  characters will be prepended in the case 
+						\hspace*{1cm} the directory exists. e.g {\it func\_4D.Analysis}.
 	\item[-model\_name {\it ModelName}] : Proceed by a name. A folder, {\it ModelName.spm} will be created in the output directory, this contains the final SPM analysis.
 	\item[-motion] : No arguments. This options indicates to the pipeline to include motion regressors first level model.
 	\item[-tr] : Proceeded by a number. The number is the TR from the acquisition sequence in seconds(time between time points).

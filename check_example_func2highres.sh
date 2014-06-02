@@ -16,7 +16,7 @@ shift 1
 if [ ! -d ${output} ] ; then 
     /bin/mkdir $output
 fi
-
+echo output : $output
 
 #find all the images
 images=""
