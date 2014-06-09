@@ -1669,7 +1669,55 @@ if [ ! "_" = "_${FIRST_CONN_REGIONS}" ] ; then    # FIRST DEFINED REGIONS
 #serves as label in atlas
 	    AT_IMS=""
 	    count=1
-	    for i_f in $FIRST_CONN_REGIONS ; do
+for i_f in $FIRST_CONN_REGIONS ; do
+lt=0;
+ut=0;
+if [ $i_f = L_Amyg ] ; then
+lt=17.5
+ut=18.5
+elif [ $i_f = R_Amyg ] ; then
+lt=53.5
+ut=54.5
+elif [ $i_f = L_Thal ] ; then
+lt=9.5
+ut=10.5
+elif [ $i_f = R_Thal ] ; then
+lt=48.5
+ut=49.5
+elif [ $i_f = L_Caud ] ; then
+lt=10.5
+ut=11.5
+elif [ $i_f = R_Caud ] ; then
+lt=49.5
+ut=50.5
+elif [ $i_f = L_Puta ] ; then
+lt=11.5
+ut=12.5
+elif [ $i_f = R_Puta ] ; then
+lt=50.5
+ut=51.5
+elif [ $i_f = L_Pall ] ; then
+lt=12.5
+ut=13.5
+elif [ $i_f = R_Pall ] ; then
+lt=51.5
+ut=52.5
+elif [ $i_f = L_Hipp ] ; then
+lt=16.5
+ut=17.5
+elif [ $i_f = R_Hipp ] ; then
+lt=52.5
+ut=53.5
+elif [ $i_f = L_Accu ] ; then
+lt=25.5
+ut=26.5
+elif [ $i_f = R_Accu ] ; then
+lt=57.5
+ut=58.5
+else
+echo "invalid FIRST region selected : $i_f"
+exit 1
+fi
 
     #make sure that structure is valid
 		if [ $i_f = L_Amyg ] ; then
@@ -1710,13 +1758,24 @@ if [ ! "_" = "_${FIRST_CONN_REGIONS}" ] ; then    # FIRST DEFINED REGIONS
 		    echo "Subcortical segmentation:${REG_ETKIN_DIR}/struct/first/first-${i_f}_first.vtk, not found "
 		    exit 1
 		fi
-		fslsurfacemaths ${REG_ETKIN_DIR}/struct/first/first-${i_f}_first.vtk -applyxfm ${OUTPUTDIR}/reg/highres2example_func.mat -fillMesh ${OUTPUTDIR}/example_func $count  ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}
+#		fslsurfacemaths ${REG_ETKIN_DIR}/struct/first/first-${i_f}_first.vtk -applyxfm ${OUTPUTDIR}/reg/highres2example_func.mat -fillMesh ${OUTPUTDIR}/example_func $count  ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f} ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}.gii
+        #include entire mesh?
+#        fslmaths ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f} -bin ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}
+
+if [ `imtest ${OUTPUTDIR}/struct/${i_f}_first_highres` = 0  ] ; then
+echo " ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/first_all_fast_firstseg -thr $lt -uthr $ut -bin ${OUTPUTDIR}/struct/${i_f}_first_highres" >> ${OUTPUTDIR}/log.txt
+        ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/first_all_fast_firstseg -thr $lt -uthr $ut -bin ${OUTPUTDIR}/struct/${i_f}_first_highres
+fi
+echo "flirt -in ${OUTPUTDIR}/struct/${i_f}_first_highres -applyxfm -init ${OUTPUTDIR}/reg/highres2example_func.mat -ref ${OUTPUTDIR}/example_func -out ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}" >> ${OUTPUTDIR}/log.txt
+        flirt -in ${OUTPUTDIR}/struct/${i_f}_first_highres -applyxfm -init ${OUTPUTDIR}/reg/highres2example_func.mat -ref ${OUTPUTDIR}/example_func -out ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}
+
 		AT_IMS="${AT_IMS} ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}"
 		let count+=1
 
 	    done
 	    echo "Native space images : $AT_IMS "
-	    fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_wfirst_native ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native $AT_IMS
+echo "fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_wfirst_native ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native $AT_IMS" >> ${OUTPUTDIR}/log.txt
+    fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_wfirst_native ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native $AT_IMS
         atlas_name="${atlas_name}_wfirst"
 #        fslmerge -t  ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native
 	    echo "Mering into single atlas : ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native"
@@ -1730,7 +1789,8 @@ if [ ! "_" = "_${FIRST_CONN_REGIONS}" ] ; then    # FIRST DEFINED REGIONS
             /bin/rm ${OUTPUTDIR}/${atlas_name}.fc/labels.txt
         fi
 
-        while [ $label -le $Nvols ] ; do 
+        while [ $label -le $Nvols ] ; do
+            echo "Creating labels.txt : $label : ${OUTPUTDIR}/${atlas_name}.fc/labels.txt "
             echo $label >> ${OUTPUTDIR}/${atlas_name}.fc/labels.txt 
             let label+=1
         done
@@ -1777,7 +1837,7 @@ if [ ! "_" = "_${FIRST_CONN_REGIONS}" ] ; then    # FIRST DEFINED REGIONS
 
         fi
 
-        echo "${ETKINLAB_DIR}/bin/atlas_connectivity -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -o ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_connectivity ${ATLAS_CONN_OPTS}" >>${OUTPUTDIR}/log.txt
+        echo "${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}" >>${OUTPUTDIR}/log.txt
 	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
 
 
