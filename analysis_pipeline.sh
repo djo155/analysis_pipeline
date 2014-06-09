@@ -1087,7 +1087,7 @@ if [ $DO_RESTING = 0 ] ; then
         if [ $DELETE_MASK_ORIENT = 1 ]; then
             ${FSLDIR}/bin/fslorient -deleteorient ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask_func
         fi
-
+echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask_func
         ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask_func
 #  ${FSLDIR}/bin/fslorient -deleteorient  ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask_func
 
@@ -1536,8 +1536,8 @@ elif [ $DO_RESTING = 1 ] ; then
         
         #if giving atlas will put fileterd func in .fc folder
         if [ ! $DO_ATLAS_CONN = 0 ] ; then
-            
-            if [ "_" = "_${FIRST_CONN_REGIONS}" ] ; then 
+            atlas_name=""
+            #if [ "_" = "_${FIRST_CONN_REGIONS}" ] ; then 
                 if [ `${FSLDIR}/bin/imtest $ATLAS_CONN` = 0 ] ; then 
                     echo "FC ROIs,$ATLAS_CONN ,  is not a valid image"
                     exit 1
@@ -1546,19 +1546,21 @@ elif [ $DO_RESTING = 1 ] ; then
                 atlas_name=`${FSLDIR}/bin/remove_ext $atlas_name`
                 Nvols=`${FSLDIR}/bin/fslnvols $ATLAS_CONN`
 
-            else
-                        #for individualized connecitivity ROIs
-		if [ "_${MODEL_NAME}" = "_" ]; then
-                    atlas_name=first_atlas
-		else
-		    atlas_name=$MODEL_NAME
+            #else
+		if [ ! "_" = "_${FIRST_CONN_REGIONS}" ] ; then               
+
+           #for individualized connecitivity ROIs
+		    if [ "_${MODEL_NAME}" = "_" ]; then
+			atlas_name=${atlas_name}_wfirst_atlas
+		    else
+			atlas_name=${atlas_name}_w$MODEL_NAME
+		    fi
+
+		    Nvols=`echo $FIRST_CONN_REGIONS | wc | awk '{ print $2 }'`
+                    echo "NVOLS : $Nvols"
+		    echo $FIRST_CONN_REGIONS | wc 
 		fi
-
-		Nvols=`echo $FIRST_CONN_REGIONS | wc | awk '{ print $2 }'`
-                echo "NVOLS : $Nvols"
-		echo $FIRST_CONN_REGIONS | wc 
-            fi
-
+		
             while [ -d ${OUTPUTDIR}/${atlas_name}.fc ] ;do 
                 atlas_name="${atlas_name}+"
             done
@@ -1567,10 +1569,10 @@ elif [ $DO_RESTING = 1 ] ; then
             if [ ! -d ${OUTPUTDIR}/${atlas_name}.fc ] ; then
                 /bin/mkdir ${OUTPUTDIR}/${atlas_name}.fc
             fi
-            if [ $Nvols -le 1 ] ; then
-                echo "currecntly only support 4D FC rois in this script"
-                exit 1
-            fi
+           # if [ $Nvols -le 1 ] ; then
+           #     echo "currecntly only support 4D FC rois in this script"
+           #     exit 1
+           # fi
             INPUT_DATA=${OUTPUTDIR}/${atlas_name}.fc/filtered_func_data
 
         else
@@ -1632,16 +1634,16 @@ elif [ $DO_RESTING = 1 ] ; then
         #atals conn = 2 - mni space stream
 
     if [ $DO_ATLAS_CONN = 1 ] ; then #native space stream
-
+	
 #to do native space FIRST mask for connectivity, lets xfm surfaces to native space, then fill them, then run connectivity, other wise use specified atlas
-USED_ATLAS=0
-if [ `${FSLDIR}/bin/imtest ${ATLAS_CONN}` = 1 ] ; then #make sure atlasexistst
+	USED_ATLAS=0
+	if [ `${FSLDIR}/bin/imtest ${ATLAS_CONN}` = 1 ] ; then #make sure atlasexistst
             echo "Found $Nvols number of parcels"
                 #Register atlas to native space
-USED_ATLAS=1
+	    USED_ATLAS=1
+	    
 
-
-
+	    
 	    if [ $XFMFLIRT = 0 ]; then
 		echo   " ${FSLDIR}/bin/applywarp -i ${ATLAS_CONN} -r  ${OUTPUTDIR}/example_func -w ${OUTPUTDIR}/reg/standard2highres_warp --postmat=${OUTPUTDIR}/reg/highres2example_func.mat -o  ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native  -d float" >> ${OUTPUTDIR}/log.txt
 		${FSLDIR}/bin/applywarp -i ${ATLAS_CONN} -r  ${OUTPUTDIR}/example_func -w ${OUTPUTDIR}/reg/standard2highres_warp --postmat=${OUTPUTDIR}/reg/highres2example_func.mat -o  ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native  -d float
@@ -1654,23 +1656,23 @@ USED_ATLAS=1
 		    fi
 		    
 		    }>> ${OUTPUTDIR}/log.txt
-
-            if [ ! -f ${OUTPUTDIR}/reg/standard2highres.mat ] ; then
-                ${FSLDIR}/bin/convert_xfm -omat ${OUTPUTDIR}/reg/standard2highres.mat -inverse ${OUTPUTDIR}/reg/highres2standard.mat
-            fi 
-
-            ${FSLDIR}/bin/convert_xfm -omat ${OUTPUTDIR}/reg/standard2example_func.mat -concat ${OUTPUTDIR}/reg/highres2example_func.mat ${OUTPUTDIR}/reg/standard2highres.mat
-            ${FSLDIR}/bin/flirt -in ${ATLAS_CONN} -ref ${OUTPUTDIR}/example_func -applyxfm -init ${OUTPUTDIR}/reg/standard2example_func.mat -out ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native
-
+		
+		if [ ! -f ${OUTPUTDIR}/reg/standard2highres.mat ] ; then
+                    ${FSLDIR}/bin/convert_xfm -omat ${OUTPUTDIR}/reg/standard2highres.mat -inverse ${OUTPUTDIR}/reg/highres2standard.mat
+		fi 
+		
+		${FSLDIR}/bin/convert_xfm -omat ${OUTPUTDIR}/reg/standard2example_func.mat -concat ${OUTPUTDIR}/reg/highres2example_func.mat ${OUTPUTDIR}/reg/standard2highres.mat
+		${FSLDIR}/bin/flirt -in ${ATLAS_CONN} -ref ${OUTPUTDIR}/example_func -applyxfm -init ${OUTPUTDIR}/reg/standard2example_func.mat -out ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native
+		
 	    fi
-fi
-
-if [ ! "_" = "_${FIRST_CONN_REGIONS}" ] ; then    # FIRST DEFINED REGIONS
+	fi
+	
+	if [ ! "_" = "_${FIRST_CONN_REGIONS}" ] ; then    # FIRST DEFINED REGIONS
 #serves as label in atlas
 	    AT_IMS=""
 	    count=1
 	    for i_f in $FIRST_CONN_REGIONS ; do
-
+		
     #make sure that structure is valid
 		if [ $i_f = L_Amyg ] ; then
 		    junk=""
@@ -1716,8 +1718,12 @@ if [ ! "_" = "_${FIRST_CONN_REGIONS}" ] ; then    # FIRST DEFINED REGIONS
 
 	    done
 	    echo "Native space images : $AT_IMS "
-	    fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_wfirst_native ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native $AT_IMS
-        atlas_name="${atlas_name}_wfirst"
+	    if [ `imtest ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native` = 1 ] ; then 
+		fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native $AT_IMS
+		atlas_name="${atlas_name}_wfirst"
+	    else
+		fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native  $AT_IMS
+	    fi
 #        fslmerge -t  ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native
 	    echo "Mering into single atlas : ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native"
 
