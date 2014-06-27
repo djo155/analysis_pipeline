@@ -16,7 +16,7 @@ fi
 FINE=1
 
 FNIRTDIR=/Volumes/EtkinLab_Data/SoftwareRepository/fsl/fsl_new/bin
-#FNIRTDIR=/usr/local/fsl/bin
+FNIRTDIR=${FSLDIR}/bin
 
 CONFDIR=${ANALYSIS_PIPE_DIR}/fnirt_fine_config/
 
