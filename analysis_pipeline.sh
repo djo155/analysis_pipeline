@@ -1155,22 +1155,22 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
         /bin/rm ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/grot
 
 
-#                   cat ${SPM_CON_FILE}  | sed "s/'<UNDEFINED>'/{'${foutdir}\/${MODEL_NAME}.spm\/SPM.mat'}/g" > ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/job_contrast.m
+                   cat ${SPM_CON_FILE}  | sed "s/'<UNDEFINED>'/{'${foutdir}\/${MODEL_NAME}.spm\/SPM.mat'}/g" > ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/job_contrast.m
 
                     #create run script and call with matlab
 
-#        ${ANALYSIS_PIPE_DIR}/analysis_pipeline_createSPM_batch_script.sh ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/run_job_contrast.m ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/job_contrast.m
+        ${ANALYSIS_PIPE_DIR}/analysis_pipeline_createSPM_batch_script.sh ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/run_job_contrast.m ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/job_contrast.m
 
 #run brians contrast function
-	echo "${ANALYSIS_PIPE_DIR}/bin/osx/spm_contrast -c $SPM_CON_FILE -o  ${OUTPUTDIR}/${MODEL_NAME}.spm">> ${OUTPUTDIR}/log.txt
-	${ANALYSIS_PIPE_DIR}/bin/osx/spm_contrast -c $SPM_CON_FILE -o  ${OUTPUTDIR}/${MODEL_NAME}.spm/
+#	echo "${ANALYSIS_PIPE_DIR}/bin/osx/spm_contrast -c $SPM_CON_FILE -o  ${OUTPUTDIR}/${MODEL_NAME}.spm">> ${OUTPUTDIR}/log.txt
+	#${ANALYSIS_PIPE_DIR}/bin/osx/spm_contrast -c $SPM_CON_FILE -o  ${OUTPUTDIR}/${MODEL_NAME}.spm/
 
 
                     #--run the matlab script
-#                   CURDIR=`pwd`
-#                   cd ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs
-#                   echo "cd ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs ; run_job_contrast" | matlab -nodesktop -nodisplay -nosplash
-#                   cd $CURDIR
+                   CURDIR=`pwd`
+                   cd ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs
+                   echo "cd ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs ; run_job_contrast" | matlab -nodesktop -nodisplay -nosplash
+                   cd $CURDIR
 
         echo "...done"
     fi
@@ -1550,14 +1550,15 @@ elif [ $DO_RESTING = 1 ] ; then
 		if [ ! "_" = "_${FIRST_CONN_REGIONS}" ] ; then               
 
            #for individualized connecitivity ROIs
-		    if [ "_${MODEL_NAME}" = "_" ]; then
-			atlas_name=${atlas_name}_wfirst_atlas
-		    else
-			atlas_name=${atlas_name}_w$MODEL_NAME
-		    fi
+#		    if [ ${MODEL_NAME} = model ]; then
+		    atlas_name=${atlas_name}_wfirst
+#		    else
+#			atlas_name=${atlas_name}_w$MODEL_NAME
+#		    fi
 
-		    Nvols=`echo $FIRST_CONN_REGIONS | wc | awk '{ print $2 }'`
-                    echo "NVOLS : $Nvols"
+		    NvolsFIRST=`echo $FIRST_CONN_REGIONS | wc | awk '{ print $2 }'`
+                    Nvols=`echo "$Nvols + $NvolsFIRST " | bc` 
+		    echo "NVOLS : $Nvols"
 		    echo $FIRST_CONN_REGIONS | wc 
 		fi
 		
@@ -1671,10 +1672,7 @@ elif [ $DO_RESTING = 1 ] ; then
 #serves as label in atlas
 	    AT_IMS=""
 	    count=1
-<<<<<<< HEAD
-	    for i_f in $FIRST_CONN_REGIONS ; do
-		
-=======
+
 for i_f in $FIRST_CONN_REGIONS ; do
 lt=0;
 ut=0;
@@ -1725,7 +1723,6 @@ echo "invalid FIRST region selected : $i_f"
 exit 1
 fi
 
->>>>>>> 65302497e56a520ad9a6394041a51433c40301f2
     #make sure that structure is valid
 		if [ $i_f = L_Amyg ] ; then
 		    junk=""
@@ -1781,18 +1778,13 @@ echo "flirt -in ${OUTPUTDIR}/struct/${i_f}_first_highres -applyxfm -init ${OUTPU
 
 	    done
 	    echo "Native space images : $AT_IMS "
-<<<<<<< HEAD
-	    if [ `imtest ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native` = 1 ] ; then 
+	    if [ `imtest ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native` = 1 ] ; then
 		fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native $AT_IMS
-		atlas_name="${atlas_name}_wfirst"
+#		atlas_name="${atlas_name}_wfirst"
 	    else
 		fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native  $AT_IMS
 	    fi
-=======
-echo "fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_wfirst_native ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native $AT_IMS" >> ${OUTPUTDIR}/log.txt
-    fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_wfirst_native ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native $AT_IMS
-        atlas_name="${atlas_name}_wfirst"
->>>>>>> 65302497e56a520ad9a6394041a51433c40301f2
+
 #        fslmerge -t  ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native
 	    echo "Mering into single atlas : ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native"
 
@@ -1811,14 +1803,15 @@ echo "fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_wfirst_native ${OU
             let label+=1
         done
         echo "Do atlas connectivity ${OUTPUTDIR}/${atlas_name}.fc"
-        if [ $GM_ONLY = 1 ] ; then 
+        if [ $GM_ONLY = 1 ] ; then
             
-            if [ $RESTING_GM_MASK = 1 ] ; then 
                 echo "Transform pve_1 to native functional space"
                 ${FSLDIR}/bin/flirt -in ${OUTPUTDIR}/struct/brain_fnirt_pve_1 -ref ${OUTPUTDIR}/example_func -applyxfm -init ${OUTPUTDIR}/reg/highres2example_func.mat -out  ${OUTPUTDIR}/struct/brain_fnirt_pve_1_2_example_func -datatype float
 
                 echo "threshold pve_1"
-                ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/brain_fnirt_pve_1_2_example_func -thr 0.5  -bin ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func
+#                ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/brain_fnirt_pve_1_2_example_func -thr 0.5  -bin ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func
+
+                ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/brain_fnirt_pve_1_2_example_func -thr 0.25 -bin ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func
     #${FSLDIR}/bin/imrm  ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/brain_fnirt_pve_1_2_example_func
                             #also add in subcortical segmentation
                 echo "trasnform firstseg"
@@ -1826,6 +1819,15 @@ echo "fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_wfirst_native ${OU
                 ${FSLDIR}/bin/flirt -in ${OUTPUTDIR}/struct/first_all_fast_firstseg -ref  ${OUTPUTDIR}/example_func -applyxfm -init ${OUTPUTDIR}/reg/highres2example_func.mat -out ${OUTPUTDIR}/struct/first_all_fast_firstseg_2_example_func  -datatype float
 
                 ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/first_all_fast_firstseg_2_example_func -thr 0.5 -add ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func  -bin ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func 
+
+${FSLDIR}/bin/applywarp -i ${FSLDIR}/data/atlases/Cerebellum/Cerebellum-MNIfnirt-maxprob-thr0-2mm.nii.gz  -w ${OUTPUTDIR}/reg/standard2highres_warp --postmat=${OUTPUTDIR}/reg/highres2example_func.mat -r ${OUTPUTDIR}/example_func  -o  ${OUTPUTDIR}/struct/brain_fnirt_cerebellum_2_example_func
+
+ ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/brain_fnirt_cerebellum_2_example_func -thr 0.5 -add ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -bin  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func 
+
+
+#do all processing for GM mask except masking
+if [ $RESTING_GM_MASK = 1 ] ; then
+
 
                 ${FSLDIR}/bin/fslmaths ${INPUT_DATA} -mas ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func ${INPUT_DATA}
 		
@@ -1855,6 +1857,21 @@ echo "fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_wfirst_native ${OU
 
         echo "${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}" >>${OUTPUTDIR}/log.txt
 	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
+
+
+#run gbc
+echo "	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC"  >>${OUTPUTDIR}/log.txt
+	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC
+
+#run_alff
+{
+echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --tr=${TR} -d ${delVols}
+} >> ${OUTPUTDIR}/log.txt
+
+
+${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --tr=${TR} -d ${delVols}
 
 
 #do transform to mni space 
