@@ -18,7 +18,7 @@ FINE=1
 FNIRTDIR=/Volumes/EtkinLab_Data/SoftwareRepository/fsl/fsl_new/bin
 #FNIRTDIR=/usr/local/fsl/bin
 
-CONFDIR=/Volumes/EtkinLab_Data/SoftwareRepository/fsl/fnirt_fine_config/
+CONFDIR=${ANALYSIS_PIPE_DIR}/fnirt_fine_config/
 
 MNI152=${FSLDIR}/data/standard/MNI152_T1_2mm
 echo "Running FNIRT -level 1"

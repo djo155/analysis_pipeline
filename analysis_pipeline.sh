@@ -882,7 +882,7 @@ fi
 
 #if [ $DO_MC = 1 ] ; then 
     #use first images instead of middle to match SPM motions correction
-if [ `${FSLDIR}/imtest  ${OUTPUTDIR}/prefiltered_func_data` = 1 ] && [ `${FSLDIR}/imtest ${OUTPUTDIR}/example_func` = 0 ]; then
+if [ `${FSLDIR}/bin/imtest  ${OUTPUTDIR}/prefiltered_func_data` = 1 ] && [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/example_func` = 0 ]; then
 
     if [ $VERBOSE ] ; then 
         echo "Extracting Reference Volume (example_func) for Motion Correction and Registration..."
