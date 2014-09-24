@@ -5,8 +5,8 @@ out=$1
 shift 1
 for i in $@ ; do 
 
-    echo $i `${ETKINLAB_DIR}/bin/interpret_motion_parameters ${i}/mc/prefiltered_func_data_mcf.par.txt ${i}/struct/*_brain.nii.gz ` 
-echo $i `${ETKINLAB_DIR}/bin/interpret_motion_parameters ${i}/mc/prefiltered_func_data_mcf.par.txt ${i}/struct/*_brain.nii.gz ` >> ${out}
+    echo $i `${ETKINLAB_DIR}/bin/interpret_motion_parameters ${i}/mc/prefiltered_func_data_mcf.par.txt ${i}/struct/brain_mask.nii.gz ` 
+echo $i `${ETKINLAB_DIR}/bin/interpret_motion_parameters ${i}/mc/prefiltered_func_data_mcf.par.txt ${i}/struct/brain_mask.nii.gz ` >> ${out}
 
 done
 
