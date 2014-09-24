@@ -117,39 +117,63 @@ void calc_motion( const string & subject, const string & fmotion,const string & 
     fout <<max_tx<<","<<max_ty<<","<<max_tz<<","<<max_theta<<","<<max_phi<<","<<max_psi<<endl;
 
     
-    
 }
 
+int do_work( const string & htmlname , const string & sub_dir ){
+    ofstream fhtml(htmlname.c_str());
+    if (fhtml.is_open())
+    {
+        fhtml<<"<html>"<<endl;
+        //set style
+        fhtml<<"<style>"<<endl;
+        fhtml<<"body { \n background-color: rgba(117,172,169,0.3); \n }"<<endl;
+        fhtml<<"</style>"<<endl;
 
+
+        fhtml<<"<body>"<<endl;
+        fhtml<<"Analysis Report for <a href=\"file://"<<sub_dir<<"\"> "<<sub_dir<<"</a> <br>"<<endl;
+
+        fhtml<<"<p> <b> Motion Plots</b> <br>"<<endl;
+        
+        fhtml<<" <table border=\"1\" style=\"width:20%\">"<<endl;
+         fhtml<<"<tr>"<<endl;
+         fhtml<<"<td>Mean RMS Displacment</td>"<<endl;
+         fhtml<<"<td>0</td>"<<endl;
+        fhtml<<"</tr>"<<endl;
+
+        fhtml<<"<tr>"<<endl;
+         fhtml<<"<td>Maximnum RMS displacement</td>"<<endl;
+        fhtml<<"<td>0</td>"<<endl;
+
+         fhtml<<"</tr>"<<endl;
+        fhtml<<"</table>"<<endl;
+
+        
+        
+        fhtml<<"<img src=\""<<sub_dir+"/mc/disp.png\""<<" alt=\"mean_disp\" width=\"747\" height=\"167\">"<<endl;
+        fhtml<<"<br>"<<endl;
+        fhtml<<"<img src=\""<<sub_dir+"/mc/trans.png\""<<" alt=\"mean_trans\" width=\"747\" height=\"167\">"<<endl;
+        fhtml<<"<br>"<<endl;
+        fhtml<<"<img src=\""<<sub_dir+"/mc/rot.png\""<<" alt=\"mean_rot\" width=\"747\" height=\"167\">"<<endl;
+
+        fhtml<<"</p>"<<endl;
+        fhtml<<"</body>"<<endl;
+        fhtml<<"</html>"<<endl;
+
+    }
+    return 0;
+}
 int main (int argc, const char * argv[])
 {
-    if (argc < 3)
+    if (argc < 2)
     {
         usage();
         return 0;
     }
-    ofstream fout(argv[1]);
-    fout<<"Subject,";
-    fout <<"mean_RMSabs_Displacement"<<","<<"max_RMSabs_Displacement"<<",";
-    fout <<"mean_RMSrel_Displacement"<<","<<"max_RMSrel_Displacement"<<",";
-    fout <<"mean_tx"<<","<<"mean_ty"<<","<<"mean_tz"<<","<<"mean_theta"<<","<<"mean_phi"<<","<<"mean_psi"<<",";
-    fout <<"max_tx"<<","<<"max_ty"<<","<<"max_tz"<<","<<"max_theta"<<","<<"max_phi"<<","<<"max_psi"<<endl;
-    if (fout.is_open())
-    {
-        int index=2;
-        while (index < argc)
-        {
-            cout<<"Reading "<<argv[index]<<"..."<<endl;
-            string motion_pars_rel=string(argv[index]) + "/mc/prefiltered_func_data_mcf_rel.rms";
-            string motion_pars_abs=string(argv[index]) + "/mc/prefiltered_func_data_mcf_abs.rms";
-            string motion_pars=string(argv[index]) + "/mc/prefiltered_func_data_mcf.par.txt";
-            calc_motion(argv[index],motion_pars,motion_pars_abs,motion_pars_rel,fout);
-            
-            ++index;
-        }
-        fout.close();
-        
-    }
+    string outname = string(argv[1]) + ".html";
+    string analysis_dir = argv[2];
+    do_work(outname,analysis_dir);
+    
     return 0;
 }
 
