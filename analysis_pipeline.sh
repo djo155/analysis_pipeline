@@ -77,19 +77,19 @@ Usage() {
     echo "-do_first_only"
     echo "-temp_deriv"
     echo "-deleteMaskOrient: Delete orientation info from the brain mask for SPM models."
-#echo "-jobdir   : Directory where SPM job files and bash scripts will be stored. "
-#echo "-jobname : basename for job file names"
-#echo "-outdir   : parent directory for output data (USE FULL PATH)"
-#echo "-outname : additional text added to some output directories (currently only the spm models run"
-#echo "-nomotion   :omit motion parameters"
-#echo "-fnirtWarp : Warp field from struct to MNI"
-#echo "-design : Design Files "
-#echo "-motion : Motion file "
-#echo "-smooth_mm : FWHM of smooth kernel (default is 6 mm)"
-#echo "-force_redoFEAT : Removes old FEAT directory and reruns the preprocessing."
+    #echo "-jobdir   : Directory where SPM job files and bash scripts will be stored. "
+    #echo "-jobname : basename for job file names"
+    #echo "-outdir   : parent directory for output data (USE FULL PATH)"
+    #echo "-outname : additional text added to some output directories (currently only the spm models run"
+    #echo "-nomotion   :omit motion parameters"
+    #echo "-fnirtWarp : Warp field from struct to MNI"
+    #echo "-design : Design Files "
+    #echo "-motion : Motion file "
+    #echo "-smooth_mm : FWHM of smooth kernel (default is 6 mm)"
+    #echo "-force_redoFEAT : Removes old FEAT directory and reruns the preprocessing."
 
-#echo "-stage6   : Create master run script for smoothing and models."
-#echo "-stage7   : Clean up date from smoothing and models. Convert analyze to NIFTI"
+    #echo "-stage6   : Create master run script for smoothing and models."
+    #echo "-stage7   : Clean up date from smoothing and models. Convert analyze to NIFTI"
     echo "-v    : Verbose mode"
     echo ""
     echo "***This script loosely adopts FSL's directory structure"
@@ -199,12 +199,12 @@ echo "---------------------Specified Options: -------------------"
 
 while [ $# != 0 ] ; do
     echo "processing $1..."
-#The function func_check_param checks to ensure that enough arguments remain for the option
+    #The function func_check_param checks to ensure that enough arguments remain for the option
 
     if [ ${1} = -func_data ] ; then
 	func_check_param 2 $@
 	shift 1
-#echo func $1
+	#echo func $1
 	FUNC_DATA=`readlink -f $1`
 	FUNC_DATA=`remove_ext $FUNC_DATA`
 	nonetest=`basename $FUNC_DATA`
@@ -258,7 +258,7 @@ while [ $# != 0 ] ; do
     elif [ ${1} = -t1 ] ; then 
         IM_T1=`readlink -f $2`
         IM_T1=`remove_ext $IM_T1`
-# echo IMT1 $1 $2 $IM_T1
+	# echo IMT1 $1 $2 $IM_T1
 
         func_check_param 2 $@
         shift 2
@@ -273,7 +273,7 @@ while [ $# != 0 ] ; do
 
         echo "----------  $OUTPUTDIR"
         shift 2
-#echo $#
+	#echo $#
     elif [ ${1} = -output_extension ] ; then 
         OUT_EXT=$2
         func_check_param 2 $@
@@ -313,19 +313,19 @@ while [ $# != 0 ] ; do
 	SMOOTH_MM=$2
 	shift 2
     elif [ ${1} = -motion ] ; then 
-#  MOTION_FILE=`readlin -f $2`
-#        MOTION_FILE="-motion ${MOTION_FILE}"
-#      func_check_param 2 $@
+	#  MOTION_FILE=`readlin -f $2`
+	#        MOTION_FILE="-motion ${MOTION_FILE}"
+	#      func_check_param 2 $@
         USE_MOTION=1
         shift 1
-#turn off options for pipeline
+	#turn off options for pipeline
     elif [ ${1} = -reg_info ]; then 
         REG_ETKIN_DIR=${2}
         REG_EXISTS=1;
         shift 2
     elif [ ${1} = -fc_rois_native ] ; then 
         DO_ATLAS_CONN=1
-#echo "read atlas" `readlink -f $2`
+	#echo "read atlas" `readlink -f $2`
         ATLAS_CONN=`readlink -f $2`
         shift 2
     elif [ ${1} = -fc_rois_mni ] ; then 
@@ -520,9 +520,9 @@ while [ $# != 0 ] ; do
 	shift 1
 	while [ ! ${1:0:1} = - ] ; do
 	    FIRST_CONN_REGIONS="${FIRST_CONN_REGIONS} ${1}" 
-# echo "Connectivity first mask list : " $FIRST_CONN_REGIONS
+	    # echo "Connectivity first mask list : " $FIRST_CONN_REGIONS
 	    shift
-#   echo "# $#"           
+	    #   echo "# $#"           
 	    if [ $# -eq 0 ] ; then 
 		break;
 	    fi
@@ -532,17 +532,17 @@ while [ $# != 0 ] ; do
         shift 1
         while [ ! ${1:0:1} = - ] ; do 
             FIRST_PPI_REGIONS="${FIRST_PPI_REGIONS} ${1}" 
-#           echo "PPI first mask list : " $FIRST_PPI_REGIONS
+	    #           echo "PPI first mask list : " $FIRST_PPI_REGIONS
             shift
-#           echo "# $#"           
+	    #           echo "# $#"           
             if [ $# -eq 0 ] ; then 
                 break;
             fi
         done
-#echo "DONE PPI FIRST"
+	#echo "DONE PPI FIRST"
     elif [ ${1} = -ppi_masks ] ; then 
         shift 1
-#read all mask to sue for PPI
+	#read all mask to sue for PPI
         DO_PPI=1
         while [ ! ${1:0:1} = - ] ; do 
 	    im=`readlink -f $1`
@@ -555,7 +555,7 @@ while [ $# != 0 ] ; do
             PPI_MASKS="${PPI_MASKS} ${im}"
             PPI_MASKS_HIGHRES="${PPI_MASKS_HIGHRES} 0"
             shift
-#            echo "# $#"           
+	    #            echo "# $#"           
             if [ $# -eq 0 ] ; then 
                 break;
             fi
@@ -613,7 +613,7 @@ fi
 #It gives option to append to current analysis
 #If not then will create a new directory with + append (as with FSL)
 if [ $APPEND_ANALYSIS = 0 ] ; then
-#unless not using functional data
+    #unless not using functional data
     if [ $BET_ONLY = 1 ] ; then
         OUTPUTDIR=`${FSLDIR}/bin/remove_ext $IM_T1`
     else    
@@ -621,7 +621,7 @@ if [ $APPEND_ANALYSIS = 0 ] ; then
     fi
     if [ ! "_$OUTPUTDIR_BASE" = _ ] ; then 
         temp=`basename $OUTPUTDIR`
-#echo TEMP $temp
+	#echo TEMP $temp
         OUTPUTDIR=${OUTPUTDIR_BASE}/${temp}
     fi
 
@@ -675,8 +675,8 @@ if [ $DO_BET = 1 ] ; then
 
     fout=`basename $IM_T1`
     fout=`${FSLDIR}/bin/remove_ext ${fout}`
-       #if structural registtration already exists, just copy data over
-        #I've now changed it to just link the folders, the memory burden is large
+    #if structural registtration already exists, just copy data over
+    #I've now changed it to just link the folders, the memory burden is large
     if [ $REG_EXISTS = 0 ]; then
         if [ $VERBOSE ] ; then
             echo " "
@@ -684,7 +684,7 @@ if [ $DO_BET = 1 ] ; then
         fi;
 
         ${FSLDIR}/bin/imcp ${IM_T1} ${OUTPUTDIR}/struct/orig
-            #set to local copy
+        #set to local copy
         IM_T1=${OUTPUTDIR}/struct/orig
 
         if [ ! "_$BETMASK" = "_" ] ; then 
@@ -706,7 +706,7 @@ if [ $DO_BET = 1 ] ; then
             echo "Copying structural data from an existing analysis..."
         fi
 
-# ${FSLDIR}/bin/imcp ${REG_ETKIN_DIR}/struct/* ${OUTPUTDIR}/struct/
+	# ${FSLDIR}/bin/imcp ${REG_ETKIN_DIR}/struct/* ${OUTPUTDIR}/struct/
 	ln -s ${REG_ETKIN_DIR}/struct/* ${OUTPUTDIR}/struct
         if [ $VERBOSE ] ; then
             echo "...done \n"
@@ -726,7 +726,7 @@ if [ $DO_FIRST = 1 ] ; then
             echo "Running FIRST subcortical segmentation... "
         fi
         /bin/mkdir ${OUTPUTDIR}/struct/first
-                #disable FIRST grid engine parallelization
+        #disable FIRST grid engine parallelization
         SGE_ROOT_PREV=${SGE_ROOT}
         SGE_ROOT=""
 
@@ -787,9 +787,9 @@ if [ $DO_REGISTRATION = 1 ] ; then
         if [ $VERBOSE ] ; then
             echo "Copying structural registration data from existing directory"
         fi
-#  ${FSLDIR}/bin/imcp ${REG_ETKIN_DIR}/reg/standard2highres_warp ${OUTPUTDIR}/reg/standard2highres_warp
-#       ${FSLDIR}/bin/imcp ${REG_ETKIN_DIR}/reg/highres2standard_warp ${OUTPUTDIR}/reg/highres2standard_warp
-#       /bin/cp  ${REG_ETKIN_DIR}/reg/highres2standard.mat  ${OUTPUTDIR}/reg/highres2standard.mat
+	#  ${FSLDIR}/bin/imcp ${REG_ETKIN_DIR}/reg/standard2highres_warp ${OUTPUTDIR}/reg/standard2highres_warp
+	#       ${FSLDIR}/bin/imcp ${REG_ETKIN_DIR}/reg/highres2standard_warp ${OUTPUTDIR}/reg/highres2standard_warp
+	#       /bin/cp  ${REG_ETKIN_DIR}/reg/highres2standard.mat  ${OUTPUTDIR}/reg/highres2standard.mat
         im_ext=`imglob -extension ${REG_ETKIN_DIR}/reg/standard2highres_warp`
         fim_ext=`basename $im_ext`
         ln -s  $im_ext ${OUTPUTDIR}/reg/${fim_ext}
@@ -806,19 +806,19 @@ if [ $DO_REGISTRATION = 1 ] ; then
         fi
 
 
-#       Nfiles=`ls ${OUTPUTDIR}/struct/ | wc | awk '{ print $1 }'`
-#       if [ $Nfiles = 0 ] ; then
-#           if [ $VERBOSE ] ; then
-#               echo "...copying structural data from existing directory..."
-#           fi
-#           #do fnirt bet
-#           #this may be performened twice
-#           ${FSLDIR}/bin/imcp ${REG_ETKIN_DIR}/struct/* ${OUTPUTDIR}/struct/
-#           /bin/cp  ${REG_ETKIN_DIR}/struct/*.mat ${OUTPUTDIR}/struct/
-#           if [ $VERBOSE ] ; then
-#               echo "...done \n"
-#           fi
-#     fi
+	#       Nfiles=`ls ${OUTPUTDIR}/struct/ | wc | awk '{ print $1 }'`
+	#       if [ $Nfiles = 0 ] ; then
+	#           if [ $VERBOSE ] ; then
+	#               echo "...copying structural data from existing directory..."
+	#           fi
+	#           #do fnirt bet
+	#           #this may be performened twice
+	#           ${FSLDIR}/bin/imcp ${REG_ETKIN_DIR}/struct/* ${OUTPUTDIR}/struct/
+	#           /bin/cp  ${REG_ETKIN_DIR}/struct/*.mat ${OUTPUTDIR}/struct/
+	#           if [ $VERBOSE ] ; then
+	#               echo "...done \n"
+	#           fi
+	#     fi
 
     fi
 
@@ -881,7 +881,7 @@ fi
 
 
 #if [ $DO_MC = 1 ] ; then 
-    #use first images instead of middle to match SPM motions correction
+#use first images instead of middle to match SPM motions correction
 if [ `${FSLDIR}/bin/imtest  ${OUTPUTDIR}/prefiltered_func_data` = 1 ] && [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/example_func` = 0 ]; then
 
     if [ $VERBOSE ] ; then 
@@ -900,13 +900,13 @@ if [ `${FSLDIR}/bin/imtest  ${OUTPUTDIR}/prefiltered_func_data` = 1 ] && [ `${FS
 	echo "...done \n"
     fi
 fi
-    #Do functional to structural registration
+#Do functional to structural registration
 
 if [ $DO_REGISTRATION_FUNC = 1 ] ; then
     if [ $VERBOSE ] ; then
         echo "Doing BBR Registration..."
     fi
-#-----------------------REGISTRATION--------------------//
+    #-----------------------REGISTRATION--------------------//
     if [ $NOBBR = 0 ]; then
 	brain=`imglob -extension ${OUTPUTDIR}/struct/brain_fnirt`
 	fbrain=`readlink -f $brain`
@@ -947,7 +947,7 @@ if [ $DO_MC = 1 ] ; then
     if [ $VERBOSE ] ; then
         echo "...done \n"
     fi
-        #-----------------------------------------------------------------------------//
+    #-----------------------------------------------------------------------------//
     if [ $VERBOSE ] ; then
 	echo "Create a functional brain mask and apply..."
     fi
@@ -983,7 +983,7 @@ if [ $DO_GLOBAL_SIG = 1 ] ; then
     ${FSLDIR}/bin/applywarp -i ${ANALYSIS_PIPE_DIR}/white_0.9_csf_0.5_mask.nii.gz -r ${OUTPUTDIR}/example_func -w ${OUTPUTDIR}/reg/standard2highres_warp --postmat=${OUTPUTDIR}/reg/highres2example_func.mat -o  ${OUTPUTDIR}/glb_sig/wm_csf_mask
 
     ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/glb_sig/wm_csf_mask -thr 1 ${OUTPUTDIR}/glb_sig/wm_csf_mask
-#-m ${FSLDIR}/data/standard/MNI152_T1_2mm_brain_mask_dil
+    #-m ${FSLDIR}/data/standard/MNI152_T1_2mm_brain_mask_dil
 
     ${ANALYSIS_PIPE_DIR}/analysis_pipeline_rm_glb_sig.sh -func_data ${OUTPUTDIR}/prefiltered_func_data -ref_data ${OUTPUTDIR}/prefiltered_func_data -mask ${OUTPUTDIR}/glb_sig/wm_csf_mask -outname ${OUTPUTDIR}/glb_sig/prefiltered_func_data_glb
     if [ $SAVE_GLB_SIG = 0 ] ; then 
@@ -1017,17 +1017,17 @@ if [ $DO_SMOOTH = 1 ] ; then
 
     
 
-#clean up 3D smoothed files only if not proceeding to model
+    #clean up 3D smoothed files only if not proceeding to model
 
     #well merge regardless, 3D files will be removed eventually
-#  ${FSLDIR}/bin/fslmerge -t ${OUTPUTDIR}/prefiltered_func_data `cat ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt`
+    #  ${FSLDIR}/bin/fslmerge -t ${OUTPUTDIR}/prefiltered_func_data `cat ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt`
 
-#check again after the models is done
+    #check again after the models is done
     
-#   if [ $DO_MODEL = 0 ] ;then
-      #merge into a single 4D time series 
-#        ${FSLDIR}/bin/imrm `cat ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt`
-#   fi
+    #   if [ $DO_MODEL = 0 ] ;then
+    #merge into a single 4D time series 
+    #        ${FSLDIR}/bin/imrm `cat ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt`
+    #   fi
     if [ $VERBOSE ] ; then
         echo "...done \n"
     fi
@@ -1037,8 +1037,8 @@ fi
 #resting flag trumps others
 if [ $DO_RESTING = 0 ] ; then 
 
-            #------------------------------------------------------//
-            #-----------------------DOING MODEL-------------------------------//
+    #------------------------------------------------------//
+    #-----------------------DOING MODEL-------------------------------//
     if [ $DO_MODEL = 1 ] ; then 
 
         if [ -f ${OUTPUTDIR}/prefiltered_func_data.nii.gz ] ; then
@@ -1051,20 +1051,20 @@ if [ $DO_RESTING = 0 ] ; then
             echo ""
             echo "Running Model..."
         fi
-            #lets figure oput what's been run already
-#    DO_4D=0
-#             if [ -f ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt ] ; then
-#                   for i in `cat ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt` ; do
-                    #chekc to see if the image files are all there. Leave it up to script to tell if its a valid image
-#                       if [ ! -f $i ] ; then
-#                           DO_4D=1
-#                           break
-#                       fi
-#                   done
-#               else
-#                   echo " ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt does not exist. Please run smoothing."
-#                  exit 1
-#               fi
+        #lets figure oput what's been run already
+	#    DO_4D=0
+	#             if [ -f ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt ] ; then
+	#                   for i in `cat ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt` ; do
+        #chekc to see if the image files are all there. Leave it up to script to tell if its a valid image
+	#                       if [ ! -f $i ] ; then
+	#                           DO_4D=1
+	#                           break
+	#                       fi
+	#                   done
+	#               else
+	#                   echo " ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt does not exist. Please run smoothing."
+	#                  exit 1
+	#               fi
         
         if [ "_$DESIGN_FILE" = "_" ] ; then 
             echo "Missing design file, it has not been set. "
@@ -1074,9 +1074,9 @@ if [ $DO_RESTING = 0 ] ; then
 	if [ ! -d ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs ] ; then 
 	    mkdir -p ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs
 	fi
-                #copy in brain mask
-#${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/struct/brain_fnirt_mask ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask
-            #set motion file if going to inlcude
+        #copy in brain mask
+	#${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/struct/brain_fnirt_mask ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask
+        #set motion file if going to inlcude
         if [ $USE_MOTION = 1 ] ; then 
             MOTION_FILE="-motion ${OUTPUTDIR}/mc/prefiltered_func_data_mcf.par.txt"
         fi
@@ -1087,18 +1087,18 @@ if [ $DO_RESTING = 0 ] ; then
         if [ $DELETE_MASK_ORIENT = 1 ]; then
             ${FSLDIR}/bin/fslorient -deleteorient ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask_func
         fi
-echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask_func
+	echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask_func
         ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask_func
-#  ${FSLDIR}/bin/fslorient -deleteorient  ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask_func
+	#  ${FSLDIR}/bin/fslorient -deleteorient  ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask_func
 
 	ls ${OUTPUTDIR}/${MODEL_NAME}.spm/
-#    if [ $DO_4D = 0 ] ; then
-#                   echo "...3D expansion already exists...proceeding..."
+	#    if [ $DO_4D = 0 ] ; then
+	#                   echo "...3D expansion already exists...proceeding..."
 	
-#                    ${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPMmodel.sh -v $VERBOSE -tr $TR -jobname ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/job_model.m  -outdir ${OUTPUTDIR}/${MODEL_NAME}.spm -func_data ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt -design $DESIGN_FILE ${MOTION_FILE} -mask ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask_func.nii
+	#                    ${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPMmodel.sh -v $VERBOSE -tr $TR -jobname ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/job_model.m  -outdir ${OUTPUTDIR}/${MODEL_NAME}.spm -func_data ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt -design $DESIGN_FILE ${MOTION_FILE} -mask ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask_func.nii
 
-                #               else
-                #   echo "...Need to split the time series"
+        #               else
+        #   echo "...Need to split the time series"
         if [ _$BRAIN_FUNC_MASK = "_" ] ; then
             BRAIN_FUNC_MASK=${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask_func.nii
         fi
@@ -1106,25 +1106,25 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
 
         ${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPMmodel.sh -v $VERBOSE -tr $TR -jobname ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/job_model.m -outdir ${OUTPUTDIR}/${MODEL_NAME}.spm -func_data ${OUTPUTDIR}/prefiltered_func_data -design $DESIGN_FILE  ${MOTION_FILE} -mask $BRAIN_FUNC_MASK -temp_deriv $USE_DERIV
 
-#               fi
+	#               fi
         
-#if [ -f ${OUTPUTDIR}/prefiltered_func_data.nii ] ; then
-#    ${FSLDIR}/bin/fslchfiletype NIFTI_GZ ${OUTPUTDIR}/prefiltered_func_data
-#fi
+	#if [ -f ${OUTPUTDIR}/prefiltered_func_data.nii ] ; then
+	#    ${FSLDIR}/bin/fslchfiletype NIFTI_GZ ${OUTPUTDIR}/prefiltered_func_data
+	#fi
 
 
-                #clean 3D datat
-#                if [ $DO_PPI = 0 ] ; then
-#                   if [ $PPI_COUNT -lt 2 ] ; then
-#                       ${FSLDIR}/bin/imrm `cat ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt`
-#
-#                   fi
-#               fi
+        #clean 3D datat
+	#                if [ $DO_PPI = 0 ] ; then
+	#                   if [ $PPI_COUNT -lt 2 ] ; then
+	#                       ${FSLDIR}/bin/imrm `cat ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt`
+	#
+	#                   fi
+	#               fi
 
         echo "...done \n"
     fi
-            #------------------------------------------------------//
-            #---------------------------DOING CONTRAST---------------------------//
+    #------------------------------------------------------//
+    #---------------------------DOING CONTRAST---------------------------//
     if [ $DO_CONTRAST = 1 ] ; then 
         echo "Run contrast..."
         if [ $VERBOSE = 1 ] ; then 
@@ -1142,40 +1142,40 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
             exit 1
         fi
 
-                    #substitue in appropriate SPMDIR
+        #substitue in appropriate SPMDIR
         if [ ! -f ${OUTPUTDIR}/${MODEL_NAME}.spm/SPM.mat ] ; then 
             echo "Trying to run contrast but ${OUTPUTDIR}/${MODEL_NAME}.spm/SPM.mat does not exist"
             exit 1
         fi
 
-                #not so elelgant way to get said to work 
-                #need \/ in variable
+        #not so elelgant way to get said to work 
+        #need \/ in variable
         echo ${OUTPUTDIR}  | sed 's/\//\\\//g' >  ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/grot
         foutdir=`cat ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/grot`
         /bin/rm ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/grot
 
 
-                   cat ${SPM_CON_FILE}  | sed "s/'<UNDEFINED>'/{'${foutdir}\/${MODEL_NAME}.spm\/SPM.mat'}/g" > ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/job_contrast.m
+        cat ${SPM_CON_FILE}  | sed "s/'<UNDEFINED>'/{'${foutdir}\/${MODEL_NAME}.spm\/SPM.mat'}/g" > ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/job_contrast.m
 
-                    #create run script and call with matlab
+        #create run script and call with matlab
 
         ${ANALYSIS_PIPE_DIR}/analysis_pipeline_createSPM_batch_script.sh ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/run_job_contrast.m ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/job_contrast.m
 
-#run brians contrast function
-#	echo "${ANALYSIS_PIPE_DIR}/bin/osx/spm_contrast -c $SPM_CON_FILE -o  ${OUTPUTDIR}/${MODEL_NAME}.spm">> ${OUTPUTDIR}/log.txt
+	#run brians contrast function
+	#	echo "${ANALYSIS_PIPE_DIR}/bin/osx/spm_contrast -c $SPM_CON_FILE -o  ${OUTPUTDIR}/${MODEL_NAME}.spm">> ${OUTPUTDIR}/log.txt
 	#${ANALYSIS_PIPE_DIR}/bin/osx/spm_contrast -c $SPM_CON_FILE -o  ${OUTPUTDIR}/${MODEL_NAME}.spm/
 
 
-                    #--run the matlab script
-                   CURDIR=`pwd`
-                   cd ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs
-                   echo "cd ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs ; run_job_contrast" | matlab -nodesktop -nodisplay -nosplash
-                   cd $CURDIR
+        #--run the matlab script
+        CURDIR=`pwd`
+        cd ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs
+        echo "cd ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs ; run_job_contrast" | matlab -nodesktop -nodisplay -nosplash
+        cd $CURDIR
 
         echo "...done"
     fi
 
-            #------------------------------------------------------//
+    #------------------------------------------------------//
     if [ $DO_APPLYREG = 1 ] ; then 
         echo "Apply MNI space transformation to contrasts... "
 
@@ -1208,7 +1208,7 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
         echo "...done"
 
     fi
-            #------------------------------------------------------//
+    #------------------------------------------------------//
     if [ $DO_PPI = 1 ] ; then 
         echo "Run PPI..."
 
@@ -1218,7 +1218,7 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
             echo ""
             echo "Running PPIs... "
         fi
-                #need to re-split the functional data
+        #need to re-split the functional data
         NEED_SPLIT=0
         for i in `cat ${OUTPUTDIR}/spm_jobs/job_smooth.m_ims3d.txt` ; do 
             if [ ! -f $i ] ; then 
@@ -1227,17 +1227,17 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
                 break
             fi
         done
-#               echo "NEED_SPLIT? $NEED_SPLIT"
-            #want split to output nifti
+	#               echo "NEED_SPLIT? $NEED_SPLIT"
+        #want split to output nifti
         export FSLOUTPUTTYPE=NIFTI
-#have moved this in the loop because im going to edit the split files by the mask 
+	#have moved this in the loop because im going to edit the split files by the mask 
 	if [ $NEED_SPLIT = 1 ] ; then
 	    echo "Split filtered func data for PPI"
 	    ${FSLDIR}/bin/fslsplit ${OUTPUTDIR}/prefiltered_func_data ${OUTPUTDIR}/sfmri_grot
 	else 
 	    echo "Split data already exists"
 	fi
-                            #This portion uses FIRST segmentation and creates masks for PPI in native space
+        #This portion uses FIRST segmentation and creates masks for PPI in native space
 	if [ ! -d ${OUTPUTDIR}/struct/ppi_masks_highres ] ; then 
             /bin/mkdir ${OUTPUTDIR}/struct/ppi_masks_highres
 	fi
@@ -1296,7 +1296,7 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
                 exit 1
             fi
 
-                #extract region
+            #extract region
 
             if [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/struct/first_all_fast_firstseg` = 0 ] ; then 
                 echo "Subcortical segmentation:${OUTPUTDIR}/struct/first_all_fast_firstseg, not found "
@@ -1321,7 +1321,7 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
             cat ${OUTPUTDIR}/${MODEL_NAME}.ppi/ppi_grot
             isHIGHRES=`cat ${OUTPUTDIR}/${MODEL_NAME}.ppi/ppi_grot`
             /bin/rm ${OUTPUTDIR}/${MODEL_NAME}.ppi/ppi_grot
-# echo "mask $mask is highh $isHIGHRES"
+	    # echo "mask $mask is highh $isHIGHRES"
             
             fmask=`basename $mask`
             fmask=`${FSLDIR}/bin/remove_ext $fmask`
@@ -1331,13 +1331,13 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
                 fi
 
 
-                        #copy in ppi mask and make sure its in nifti
-# ${FSLDIR}/bin/fslchfiletype NIFTI $mask ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/${fmask}
-#                       echo "Transform PPI masks into native space"
-# ${FSLDIR}/bin/imcp $mask ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/${fmask}
-#  fm=`basename $mask`
-#                        fm=`${FSLDIR}/bin/remove_ext $fm`
-#check if file already existst in ppi_masks_highres directory
+                #copy in ppi mask and make sure its in nifti
+		# ${FSLDIR}/bin/fslchfiletype NIFTI $mask ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/${fmask}
+		#                       echo "Transform PPI masks into native space"
+		# ${FSLDIR}/bin/imcp $mask ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/${fmask}
+		#  fm=`basename $mask`
+		#                        fm=`${FSLDIR}/bin/remove_ext $fm`
+		#check if file already existst in ppi_masks_highres directory
                 mbase=`basename $mask`
                 mbase=`${FSLDIR}/bin/remove_ext $mbase`
                 if [ $isHIGHRES = 1 ] ; then
@@ -1351,7 +1351,7 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
                     if [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/struct/ppi_masks_standard/${mbase}` = 0 ] ; then
                         ${FSLDIR}/bin/imcp $mask ${OUTPUTDIR}/struct/ppi_masks_standard/
                     fi
-                        #need extension for SPM
+                    #need extension for SPM
 
 		    if [ $XFMFLIRT = 0 ]; then
 			echo   "${FSLDIR}/bin/applywarp -i ${OUTPUTDIR}/struct/ppi_masks_standard/${fmask}  -w ${OUTPUTDIR}/reg/standard2highres_warp --postmat=${OUTPUTDIR}/reg/highres2example_func.mat -r ${OUTPUTDIR}/example_func -o ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/${fmask}_native -d float" >> ${OUTPUTDIR}/log.txt
@@ -1376,9 +1376,9 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
 
                 fi
 
-#       ${FSLDIR}/bin/fslorient -deleteorient ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/${fmask}_native
+		#       ${FSLDIR}/bin/fslorient -deleteorient ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/${fmask}_native
 
-#  ${FSLDIR}/bin/fslmaths  ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/${fmask}_native -thr 0.5 -bin  ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/${fmask}_native
+		#  ${FSLDIR}/bin/fslmaths  ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/${fmask}_native -thr 0.5 -bin  ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/${fmask}_native
 		${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/${fmask}_native -bin ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/${fmask}_native_bin -odt short
 
                 
@@ -1387,24 +1387,24 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
 
 
 
-                        #need to write over the split data so for timeseries extraction
-# I trick SPM here by changing the time-series data
+                #need to write over the split data so for timeseries extraction
+		# I trick SPM here by changing the time-series data
 
 		if [ $VERBOSE = 1 ] ; then
 		    echo "Weighting time sereis to get PVE weighted series..."
 		fi
 
-#this part is used to weight ppi by PVE
-#${FSLDIR}/bin/imcp ${OUTPUTDIR}/prefiltered_func_data ${OUTPUTDIR}/prefiltered_func_data_orig
-#export FSLOUTPUTTYPE
+		#this part is used to weight ppi by PVE
+		#${FSLDIR}/bin/imcp ${OUTPUTDIR}/prefiltered_func_data ${OUTPUTDIR}/prefiltered_func_data_orig
+		#export FSLOUTPUTTYPE
                 ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/prefiltered_func_data -mul ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/${fmask}_native ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/prefiltered_func_data_ppi
 
-#this is not original prefiltered func ..BEWARE!!!
+		#this is not original prefiltered func ..BEWARE!!!
                 ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/prefiltered_func_data_ppi
 
-#                        ${FSLDIR}/bin/fslsplit ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/prefiltered_func_data_ppi ${OUTPUTDIR}/sfmri_grot
+		#                        ${FSLDIR}/bin/fslsplit ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/prefiltered_func_data_ppi ${OUTPUTDIR}/sfmri_grot
 
-#                       ${FSLDIR}/bin/imrm ${OUTPUTDIR}/prefiltered_func_data_ppi
+		#                       ${FSLDIR}/bin/imrm ${OUTPUTDIR}/prefiltered_func_data_ppi
 
 		if [ $VERBOSE = 1 ] ; then
 		    echo "done"
@@ -1414,14 +1414,14 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
 		    echo "Extraxting ROI time-series...."
 		fi
 
-#copy SPM.mat
+		#copy SPM.mat
 		cp ${OUTPUTDIR}/${MODEL_NAME}.spm/SPM.mat ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/
 
                 #EXTRACT TIME SERIES FROM ROI (1st eigenvariate)
-#  ${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPM_VOI.sh ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/run_voi.m ${MASK}  ${con} ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/ ${fmask}_con_${con} ${OUTPUTDIR}/${MODEL_NAME}.spm/SPM.mat
+		#  ${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPM_VOI.sh ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/run_voi.m ${MASK}  ${con} ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/ ${fmask}_con_${con} ${OUTPUTDIR}/${MODEL_NAME}.spm/SPM.mat
 		${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPM_VOI.sh ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/run_voi.m ${MASK}  ${con} ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/ ${fmask}_con_${con} ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/SPM.mat ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/prefiltered_func_data_ppi
 
-#run time series extraction
+		#run time series extraction
                 CURDIR=`pwd`
                 cd ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/
                 echo "cd ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/ ; run_voi" | matlab -nodesktop -nosplash
@@ -1436,8 +1436,8 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
 		if [ $VERBOSE = 1 ] ; then
 		    echo "Reset time-series data and moving VOI_${fmask}_con_${con}_session_*.mat files..."
 		fi
-#                        ${FSLDIR}/bin/imrm ${OUTPUTDIR}/prefiltered_func_data
-                    #    ${FSLDIR}/bin/immv ${OUTPUTDIR}/prefiltered_func_data_orig   ${FSLDIR}/bin/imrm ${OUTPUTDIR}/prefiltered_func_data
+		#                        ${FSLDIR}/bin/imrm ${OUTPUTDIR}/prefiltered_func_data
+                #    ${FSLDIR}/bin/immv ${OUTPUTDIR}/prefiltered_func_data_orig   ${FSLDIR}/bin/imrm ${OUTPUTDIR}/prefiltered_func_data
 
                 /bin/mv ${OUTPUTDIR}/${MODEL_NAME}.spm/VOI_${fmask}_con_${con}_session_*.mat ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/
 
@@ -1450,20 +1450,20 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
 		fi
 
 
-#move VOI  files into PPI directory
-#                       echo "move VOI file"
+		#move VOI  files into PPI directory
+		#                       echo "move VOI file"
 
-#DO PPI MODELS
+		#DO PPI MODELS
                 ${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPM_PPI.sh ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/run_ppi.m ${MASK}  ${con} ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/ ${fmask}_con_${con} ${OUTPUTDIR}/${MODEL_NAME}.spm/SPM.mat
 
-            #run PPI using matlab
-            #but first remove existing SPM.mat if exists
+		#run PPI using matlab
+		#but first remove existing SPM.mat if exists
                 if [ -f ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/SPM.mat ] ; then 
                     /bin/rm ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/SPM.mat 
                 fi
-#run PPI
-#split to write over the pve weighted time series
-#                        ${FSLDIR}/bin/fslsplit ${OUTPUTDIR}/prefiltered_func_data ${OUTPUTDIR}/sfmri_grot
+		#run PPI
+		#split to write over the pve weighted time series
+		#                        ${FSLDIR}/bin/fslsplit ${OUTPUTDIR}/prefiltered_func_data ${OUTPUTDIR}/sfmri_grot
 
                 CURDIR=`pwd`
                 cd ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/
@@ -1477,12 +1477,12 @@ echo  ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fni
 		    echo "done"
 		fi
 
-            #apply regsitration to PPI contrast 
+		#apply regsitration to PPI contrast 
 
                 for im in `${FSLDIR}/bin/imglob  ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/con_0*.hdr  ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/spmT_0*.hdr` ; do 
                     f=`basename $im`
                     f=`${FSLDIR}/bin/remove_ext $f`
-            #place in the reg_standard directory 
+		    #place in the reg_standard directory 
                     if [ ! -d ${OUTPUTDIR}/reg_standard/${MODEL_NAME}.ppi/${fmask}_con_${con} ] ; then
                         /bin/mkdir -p ${OUTPUTDIR}/reg_standard/${MODEL_NAME}.ppi/${fmask}_con_${con}
                     fi
@@ -1519,49 +1519,49 @@ elif [ $DO_RESTING = 1 ] ; then
     ${FSLDIR}/bin/fslchfiletype NIFTI_GZ ${OUTPUTDIR}/prefiltered_func_data
 
 
-        #first convert FWHM (HZ) to sigma (seconds)
-        #NEED TO DIVIDE BY 2 cutoff_hz_hp is FWHM (Hz) = 1/2sigma
+    #first convert FWHM (HZ) to sigma (seconds)
+    #NEED TO DIVIDE BY 2 cutoff_hz_hp is FWHM (Hz) = 1/2sigma
     LP_SIGMA_CUTOFF_SEC=`echo "scale=11;1.0 / $LP_FREQ_CUTOFF_HZ "  | bc `
     LP_SIGMA_CUTOFF_VOL=`echo "scale=11;$LP_SIGMA_CUTOFF_SEC / $TR / 2.355" | bc `
     echo $LP_FREQ_CUTOFF_HZ $LP_SIGMA_CUTOFF_SEC $LP_SIGMA_CUTOFF_VOL
     HP_SIGMA_CUTOFF_SEC=`echo "scale=11;1.0 / $HP_FREQ_CUTOFF_HZ "  | bc `
     HP_SIGMA_CUTOFF_VOL=`echo "scale=11;$HP_SIGMA_CUTOFF_SEC / $TR / 2.355" | bc `
-# echo $HP_FREQ_CUTOFF_HZ $HP_SIGMA_CUTOFF_SEC $HP_SIGMA_CUTOFF_VOL
+    # echo $HP_FREQ_CUTOFF_HZ $HP_SIGMA_CUTOFF_SEC $HP_SIGMA_CUTOFF_VOL
     INPUT_DATA=${OUTPUTDIR}/prefiltered_func_data
 
 
-#add pluses
+    #add pluses
     if [ $DO_FILTERING = 1 ] ; then 
-                # INPUT_DATA=${OUTPUTDIR}/filtered_func_data
+        # INPUT_DATA=${OUTPUTDIR}/filtered_func_data
         
         #if giving atlas will put fileterd func in .fc folder
         if [ ! $DO_ATLAS_CONN = 0 ] ; then
             atlas_name=""
             #if [ "_" = "_${FIRST_CONN_REGIONS}" ] ; then 
-                if [ `${FSLDIR}/bin/imtest $ATLAS_CONN` = 0 ] ; then 
-                    echo "FC ROIs,$ATLAS_CONN ,  is not a valid image"
-                    exit 1
-                fi
-                atlas_name=`basename $ATLAS_CONN`
-                atlas_name=`${FSLDIR}/bin/remove_ext $atlas_name`
-                Nvols=`${FSLDIR}/bin/fslnvols $ATLAS_CONN`
+            if [ `${FSLDIR}/bin/imtest $ATLAS_CONN` = 0 ] ; then 
+                echo "FC ROIs,$ATLAS_CONN ,  is not a valid image"
+                exit 1
+            fi
+            atlas_name=`basename $ATLAS_CONN`
+            atlas_name=`${FSLDIR}/bin/remove_ext $atlas_name`
+            Nvols=`${FSLDIR}/bin/fslnvols $ATLAS_CONN`
 
             #else
-		if [ ! "_" = "_${FIRST_CONN_REGIONS}" ] ; then               
+	    if [ ! "_" = "_${FIRST_CONN_REGIONS}" ] ; then               
 
-           #for individualized connecitivity ROIs
-#		    if [ ${MODEL_NAME} = model ]; then
-		    atlas_name=${atlas_name}_wfirst
-#		    else
-#			atlas_name=${atlas_name}_w$MODEL_NAME
-#		    fi
+		#for individualized connecitivity ROIs
+		#		    if [ ${MODEL_NAME} = model ]; then
+		atlas_name=${atlas_name}_wfirst
+		#		    else
+		#			atlas_name=${atlas_name}_w$MODEL_NAME
+		#		    fi
 
-		    NvolsFIRST=`echo $FIRST_CONN_REGIONS | wc | awk '{ print $2 }'`
-                    Nvols=`echo "$Nvols + $NvolsFIRST " | bc` 
-		    echo "NVOLS : $Nvols"
-		    echo $FIRST_CONN_REGIONS | wc 
-		fi
-		
+		NvolsFIRST=`echo $FIRST_CONN_REGIONS | wc | awk '{ print $2 }'`
+                Nvols=`echo "$Nvols + $NvolsFIRST " | bc` 
+		echo "NVOLS : $Nvols"
+		echo $FIRST_CONN_REGIONS | wc 
+	    fi
+	    
             while [ -d ${OUTPUTDIR}/${atlas_name}.fc ] ;do 
                 atlas_name="${atlas_name}+"
             done
@@ -1570,10 +1570,10 @@ elif [ $DO_RESTING = 1 ] ; then
             if [ ! -d ${OUTPUTDIR}/${atlas_name}.fc ] ; then
                 /bin/mkdir ${OUTPUTDIR}/${atlas_name}.fc
             fi
-           # if [ $Nvols -le 1 ] ; then
-           #     echo "currecntly only support 4D FC rois in this script"
-           #     exit 1
-           # fi
+            # if [ $Nvols -le 1 ] ; then
+            #     echo "currecntly only support 4D FC rois in this script"
+            #     exit 1
+            # fi
             INPUT_DATA=${OUTPUTDIR}/${atlas_name}.fc/filtered_func_data
 
         else
@@ -1582,8 +1582,8 @@ elif [ $DO_RESTING = 1 ] ; then
 
         
 
-#re-filetring now
-#  if [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/filtered_func_data` = 0 ] ; then 
+	#re-filetring now
+	#  if [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/filtered_func_data` = 0 ] ; then 
         echo "filter data"
         #imcp ${OUTPUTDIR}/prefiltered_func_data ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/filtered_func_data_bu
         echo "Bandpass filtering the data between $HP_SIGMA_CUTOFF_VOL - $LP_SIGMA_CUTOFF_VOL (volumes)"
@@ -1595,14 +1595,14 @@ elif [ $DO_RESTING = 1 ] ; then
         echo HIGHPASS $HP_FREQ_CUTOFF_HZ $HP_SIGMA_CUTOFF_SEC $HP_SIGMA_CUTOFF_VOL >> ${INPUT_DATA}_freq_range.txt
         
 
-#allows you to filter data without connectiviuty
+	#allows you to filter data without connectiviuty
         if [ $DO_ATLAS_CONN = 0 ] ; then
             ${FSLDIR}/bin/imrm ${OUTPUTDIR}/prefiltered_func_data
         fi
-#               else 
-#                   echo "Use already filtered data"
+	#               else 
+	#                   echo "Use already filtered data"
 
-#               fi
+	#               fi
     else 
         if [ ! $DO_ATLAS_CONN = 0 ] ; then
             if [ `${FSLDIR}/bin/imtest $ATLAS_CONN` = 0 ] ; then 
@@ -1631,16 +1631,16 @@ elif [ $DO_RESTING = 1 ] ; then
         echo "Not filtering Data ${atlas_name}"
 
     fi
-        #ATLAS CONN =1 - Native space stream
-        #atals conn = 2 - mni space stream
+    #ATLAS CONN =1 - Native space stream
+    #atals conn = 2 - mni space stream
 
     if [ $DO_ATLAS_CONN = 1 ] ; then #native space stream
 	
-#to do native space FIRST mask for connectivity, lets xfm surfaces to native space, then fill them, then run connectivity, other wise use specified atlas
+	#to do native space FIRST mask for connectivity, lets xfm surfaces to native space, then fill them, then run connectivity, other wise use specified atlas
 	USED_ATLAS=0
 	if [ `${FSLDIR}/bin/imtest ${ATLAS_CONN}` = 1 ] ; then #make sure atlasexistst
             echo "Found $Nvols number of parcels"
-                #Register atlas to native space
+            #Register atlas to native space
 	    USED_ATLAS=1
 	    
 
@@ -1669,61 +1669,61 @@ elif [ $DO_RESTING = 1 ] ; then
 	fi
 	
 	if [ ! "_" = "_${FIRST_CONN_REGIONS}" ] ; then    # FIRST DEFINED REGIONS
-#serves as label in atlas
+	    #serves as label in atlas
 	    AT_IMS=""
 	    count=1
 
-for i_f in $FIRST_CONN_REGIONS ; do
-lt=0;
-ut=0;
-if [ $i_f = L_Amyg ] ; then
-lt=17.5
-ut=18.5
-elif [ $i_f = R_Amyg ] ; then
-lt=53.5
-ut=54.5
-elif [ $i_f = L_Thal ] ; then
-lt=9.5
-ut=10.5
-elif [ $i_f = R_Thal ] ; then
-lt=48.5
-ut=49.5
-elif [ $i_f = L_Caud ] ; then
-lt=10.5
-ut=11.5
-elif [ $i_f = R_Caud ] ; then
-lt=49.5
-ut=50.5
-elif [ $i_f = L_Puta ] ; then
-lt=11.5
-ut=12.5
-elif [ $i_f = R_Puta ] ; then
-lt=50.5
-ut=51.5
-elif [ $i_f = L_Pall ] ; then
-lt=12.5
-ut=13.5
-elif [ $i_f = R_Pall ] ; then
-lt=51.5
-ut=52.5
-elif [ $i_f = L_Hipp ] ; then
-lt=16.5
-ut=17.5
-elif [ $i_f = R_Hipp ] ; then
-lt=52.5
-ut=53.5
-elif [ $i_f = L_Accu ] ; then
-lt=25.5
-ut=26.5
-elif [ $i_f = R_Accu ] ; then
-lt=57.5
-ut=58.5
-else
-echo "invalid FIRST region selected : $i_f"
-exit 1
-fi
+	    for i_f in $FIRST_CONN_REGIONS ; do
+		lt=0;
+		ut=0;
+		if [ $i_f = L_Amyg ] ; then
+		    lt=17.5
+		    ut=18.5
+		elif [ $i_f = R_Amyg ] ; then
+		    lt=53.5
+		    ut=54.5
+		elif [ $i_f = L_Thal ] ; then
+		    lt=9.5
+		    ut=10.5
+		elif [ $i_f = R_Thal ] ; then
+		    lt=48.5
+		    ut=49.5
+		elif [ $i_f = L_Caud ] ; then
+		    lt=10.5
+		    ut=11.5
+		elif [ $i_f = R_Caud ] ; then
+		    lt=49.5
+		    ut=50.5
+		elif [ $i_f = L_Puta ] ; then
+		    lt=11.5
+		    ut=12.5
+		elif [ $i_f = R_Puta ] ; then
+		    lt=50.5
+		    ut=51.5
+		elif [ $i_f = L_Pall ] ; then
+		    lt=12.5
+		    ut=13.5
+		elif [ $i_f = R_Pall ] ; then
+		    lt=51.5
+		    ut=52.5
+		elif [ $i_f = L_Hipp ] ; then
+		    lt=16.5
+		    ut=17.5
+		elif [ $i_f = R_Hipp ] ; then
+		    lt=52.5
+		    ut=53.5
+		elif [ $i_f = L_Accu ] ; then
+		    lt=25.5
+		    ut=26.5
+		elif [ $i_f = R_Accu ] ; then
+		    lt=57.5
+		    ut=58.5
+		else
+		    echo "invalid FIRST region selected : $i_f"
+		    exit 1
+		fi
 
-    #make sure that structure is valid
+		#make sure that structure is valid
 		if [ $i_f = L_Amyg ] ; then
 		    junk=""
 		elif [ $i_f = R_Amyg ] ; then
@@ -1757,21 +1757,21 @@ fi
 		    exit 1
 		fi
 
-    #extract region
+		#extract region
 		if [ ! -f ${REG_ETKIN_DIR}/struct/first/first-${i_f}_first.vtk ] ; then 
 		    echo "Subcortical segmentation:${REG_ETKIN_DIR}/struct/first/first-${i_f}_first.vtk, not found "
 		    exit 1
 		fi
-#		fslsurfacemaths ${REG_ETKIN_DIR}/struct/first/first-${i_f}_first.vtk -applyxfm ${OUTPUTDIR}/reg/highres2example_func.mat -fillMesh ${OUTPUTDIR}/example_func $count  ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f} ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}.gii
-        #include entire mesh?
-#        fslmaths ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f} -bin ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}
+		#		fslsurfacemaths ${REG_ETKIN_DIR}/struct/first/first-${i_f}_first.vtk -applyxfm ${OUTPUTDIR}/reg/highres2example_func.mat -fillMesh ${OUTPUTDIR}/example_func $count  ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f} ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}.gii
+		#include entire mesh?
+		#        fslmaths ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f} -bin ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}
 
-if [ `imtest ${OUTPUTDIR}/struct/${i_f}_first_highres` = 0  ] ; then
-echo " ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/first_all_fast_firstseg -thr $lt -uthr $ut -bin ${OUTPUTDIR}/struct/${i_f}_first_highres" >> ${OUTPUTDIR}/log.txt
-        ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/first_all_fast_firstseg -thr $lt -uthr $ut -bin ${OUTPUTDIR}/struct/${i_f}_first_highres
-fi
-echo "flirt -in ${OUTPUTDIR}/struct/${i_f}_first_highres -applyxfm -init ${OUTPUTDIR}/reg/highres2example_func.mat -ref ${OUTPUTDIR}/example_func -out ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}" >> ${OUTPUTDIR}/log.txt
-        flirt -in ${OUTPUTDIR}/struct/${i_f}_first_highres -applyxfm -init ${OUTPUTDIR}/reg/highres2example_func.mat -ref ${OUTPUTDIR}/example_func -out ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}
+		if [ `imtest ${OUTPUTDIR}/struct/${i_f}_first_highres` = 0  ] ; then
+		    echo " ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/first_all_fast_firstseg -thr $lt -uthr $ut -bin ${OUTPUTDIR}/struct/${i_f}_first_highres" >> ${OUTPUTDIR}/log.txt
+		    ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/first_all_fast_firstseg -thr $lt -uthr $ut -bin ${OUTPUTDIR}/struct/${i_f}_first_highres
+		fi
+		echo "flirt -in ${OUTPUTDIR}/struct/${i_f}_first_highres -applyxfm -init ${OUTPUTDIR}/reg/highres2example_func.mat -ref ${OUTPUTDIR}/example_func -out ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}" >> ${OUTPUTDIR}/log.txt
+		flirt -in ${OUTPUTDIR}/struct/${i_f}_first_highres -applyxfm -init ${OUTPUTDIR}/reg/highres2example_func.mat -ref ${OUTPUTDIR}/example_func -out ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}
 
 		AT_IMS="${AT_IMS} ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_${i_f}"
 		let count+=1
@@ -1780,18 +1780,18 @@ echo "flirt -in ${OUTPUTDIR}/struct/${i_f}_first_highres -applyxfm -init ${OUTPU
 	    echo "Native space images : $AT_IMS "
 	    if [ `imtest ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native` = 1 ] ; then
 		fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native $AT_IMS
-#		atlas_name="${atlas_name}_wfirst"
+		#		atlas_name="${atlas_name}_wfirst"
 	    else
 		fslmerge -t ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native  $AT_IMS
 	    fi
 
-#        fslmerge -t  ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native
+	    #        fslmerge -t  ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native
 	    echo "Mering into single atlas : ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native"
 
 	fi
-                #need to create label text file
-#incorporate FAST results
-#fslmaths ${i}/struct/pve_1_2_example_func -mul ${i}/atlas_122_4D.fc/atlas_122_4D_native  -thr 0.5 -bin ${i}/atlas_122_4D.fc/atlas_122_4D_native_gm  -odt short
+        #need to create label text file
+	#incorporate FAST results
+	#fslmaths ${i}/struct/pve_1_2_example_func -mul ${i}/atlas_122_4D.fc/atlas_122_4D_native  -thr 0.5 -bin ${i}/atlas_122_4D.fc/atlas_122_4D_native_gm  -odt short
         label=1
         if [ -f ${OUTPUTDIR}/${atlas_name}.fc/labels.txt ] ; then 
             /bin/rm ${OUTPUTDIR}/${atlas_name}.fc/labels.txt
@@ -1805,28 +1805,28 @@ echo "flirt -in ${OUTPUTDIR}/struct/${i_f}_first_highres -applyxfm -init ${OUTPU
         echo "Do atlas connectivity ${OUTPUTDIR}/${atlas_name}.fc"
         if [ $GM_ONLY = 1 ] ; then
             
-                echo "Transform pve_1 to native functional space"
-                ${FSLDIR}/bin/flirt -in ${OUTPUTDIR}/struct/brain_fnirt_pve_1 -ref ${OUTPUTDIR}/example_func -applyxfm -init ${OUTPUTDIR}/reg/highres2example_func.mat -out  ${OUTPUTDIR}/struct/brain_fnirt_pve_1_2_example_func -datatype float
+            echo "Transform pve_1 to native functional space"
+            ${FSLDIR}/bin/flirt -in ${OUTPUTDIR}/struct/brain_fnirt_pve_1 -ref ${OUTPUTDIR}/example_func -applyxfm -init ${OUTPUTDIR}/reg/highres2example_func.mat -out  ${OUTPUTDIR}/struct/brain_fnirt_pve_1_2_example_func -datatype float
 
-                echo "threshold pve_1"
-#                ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/brain_fnirt_pve_1_2_example_func -thr 0.5  -bin ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func
+            echo "threshold pve_1"
+	    #                ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/brain_fnirt_pve_1_2_example_func -thr 0.5  -bin ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func
 
-                ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/brain_fnirt_pve_1_2_example_func -thr 0.25 -bin ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func
-    #${FSLDIR}/bin/imrm  ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/brain_fnirt_pve_1_2_example_func
-                            #also add in subcortical segmentation
-                echo "trasnform firstseg"
+            ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/brain_fnirt_pve_1_2_example_func -thr 0.25 -bin ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func
+	    #${FSLDIR}/bin/imrm  ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/brain_fnirt_pve_1_2_example_func
+            #also add in subcortical segmentation
+            echo "trasnform firstseg"
 
-                ${FSLDIR}/bin/flirt -in ${OUTPUTDIR}/struct/first_all_fast_firstseg -ref  ${OUTPUTDIR}/example_func -applyxfm -init ${OUTPUTDIR}/reg/highres2example_func.mat -out ${OUTPUTDIR}/struct/first_all_fast_firstseg_2_example_func  -datatype float
+            ${FSLDIR}/bin/flirt -in ${OUTPUTDIR}/struct/first_all_fast_firstseg -ref  ${OUTPUTDIR}/example_func -applyxfm -init ${OUTPUTDIR}/reg/highres2example_func.mat -out ${OUTPUTDIR}/struct/first_all_fast_firstseg_2_example_func  -datatype float
 
-                ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/first_all_fast_firstseg_2_example_func -thr 0.5 -add ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func  -bin ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func 
+            ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/first_all_fast_firstseg_2_example_func -thr 0.5 -add ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func  -bin ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func 
 
-${FSLDIR}/bin/applywarp -i ${FSLDIR}/data/atlases/Cerebellum/Cerebellum-MNIfnirt-maxprob-thr0-2mm.nii.gz  -w ${OUTPUTDIR}/reg/standard2highres_warp --postmat=${OUTPUTDIR}/reg/highres2example_func.mat -r ${OUTPUTDIR}/example_func  -o  ${OUTPUTDIR}/struct/brain_fnirt_cerebellum_2_example_func
+	    ${FSLDIR}/bin/applywarp -i ${FSLDIR}/data/atlases/Cerebellum/Cerebellum-MNIfnirt-maxprob-thr0-2mm.nii.gz  -w ${OUTPUTDIR}/reg/standard2highres_warp --postmat=${OUTPUTDIR}/reg/highres2example_func.mat -r ${OUTPUTDIR}/example_func  -o  ${OUTPUTDIR}/struct/brain_fnirt_cerebellum_2_example_func
 
- ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/brain_fnirt_cerebellum_2_example_func -thr 0.5 -add ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -bin  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func 
+	    ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/struct/brain_fnirt_cerebellum_2_example_func -thr 0.5 -add ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -bin  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func 
 
 
-#do all processing for GM mask except masking
-if [ $RESTING_GM_MASK = 1 ] ; then
+	    #do all processing for GM mask except masking
+	    if [ $RESTING_GM_MASK = 1 ] ; then
 
 
                 ${FSLDIR}/bin/fslmaths ${INPUT_DATA} -mas ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func ${INPUT_DATA}
@@ -1859,22 +1859,22 @@ if [ $RESTING_GM_MASK = 1 ] ; then
 	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
 
 
-#run gbc
-echo "	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC"  >>${OUTPUTDIR}/log.txt
+	#run gbc
+	echo "	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC"  >>${OUTPUTDIR}/log.txt
 	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC
 
-#run_alff
-{
-echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
-echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --tr=${TR} -d ${delVols}
-} >> ${OUTPUTDIR}/log.txt
+	#run_alff
+	{
+	    echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+	    echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --tr=${TR} -d ${delVols}
+	} >> ${OUTPUTDIR}/log.txt
 
 
-${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
-${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --tr=${TR} -d ${delVols}
+	${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+	${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --tr=${TR} -d ${delVols}
 
 
-#do transform to mni space 
+	#do transform to mni space 
 	if [ ! -d ${OUTPUTDIR}/reg_standard/${atlas_name}.fc/ ]; then 
 	    mkdir -p ${OUTPUTDIR}/reg_standard/${atlas_name}.fc
 	fi
@@ -1909,7 +1909,7 @@ ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDI
 	fi
 
 
- #clean up the motion residuals                                                                                                                                                   
+	#clean up the motion residuals                                                                                                                                                   
         if [ $DO_DEL_FILTFUNC_RES = 1 ] ; then
             if [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/${atlas_name}.fc/filtered_func_data` = 1 ] ; then
                 ${FSLDIR}/bin/imrm ${OUTPUTDIR}/${atlas_name}.fc/filtered_func_data
@@ -1919,7 +1919,7 @@ ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDI
 
 
 
-                    #clean up the motion residuals  
+        #clean up the motion residuals  
         if [ $DO_DEL_MC_RES = 1 ] ; then
             if [ $USE_MOTION = 1 ] ; then 
                 if [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/${atlas_name}.fc/mc/motion_residuals` = 1 ] ; then 
