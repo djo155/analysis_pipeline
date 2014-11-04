@@ -1454,6 +1454,7 @@ if [ $DO_RESTING = 0 ] ; then
 		#                       echo "move VOI file"
 
 		#DO PPI MODELS
+echo "${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPM_PPI.sh ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/run_ppi.m ${MASK}  ${con} ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/ ${fmask}_con_${con} ${OUTPUTDIR}/${MODEL_NAME}.spm/SPM.mat"  >> ${OUTPUTDIR}/log.txt
                 ${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPM_PPI.sh ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/run_ppi.m ${MASK}  ${con} ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/ ${fmask}_con_${con} ${OUTPUTDIR}/${MODEL_NAME}.spm/SPM.mat
 
 		#run PPI using matlab
@@ -1561,8 +1562,24 @@ elif [ $DO_RESTING = 1 ] ; then
 		echo "NVOLS : $Nvols"
 		echo $FIRST_CONN_REGIONS | wc 
 	    fi
-	    
-            while [ -d ${OUTPUTDIR}/${atlas_name}.fc ] ;do 
+	     if [ $DO_ATLAS_CONN = 2 ] ; then 
+		   while [ -d ${OUTPUTDIR}/${atlas_name}.fc_mni ] ;do 
+                atlas_name="${atlas_name}+"
+            done
+
+
+            if [ ! -d ${OUTPUTDIR}/${atlas_name}.fc_mni ] ; then
+                /bin/mkdir ${OUTPUTDIR}/${atlas_name}.fc_mni
+            fi
+            # if [ $Nvols -le 1 ] ; then
+            #     echo "currecntly only support 4D FC rois in this script"
+            #     exit 1
+            # fi
+            INPUT_DATA=${OUTPUTDIR}/${atlas_name}.fc_mni/filtered_func_data
+
+		 
+		 else
+            while [ -d ${OUTPUTDIR}/${atlas_name}.fc_mni ] ;do 
                 atlas_name="${atlas_name}+"
             done
 
@@ -1575,6 +1592,7 @@ elif [ $DO_RESTING = 1 ] ; then
             #     exit 1
             # fi
             INPUT_DATA=${OUTPUTDIR}/${atlas_name}.fc/filtered_func_data
+			fi
 
         else
             INPUT_DATA=${OUTPUTDIR}/filtered_func_data
@@ -1613,14 +1631,30 @@ elif [ $DO_RESTING = 1 ] ; then
             atlas_name=`${FSLDIR}/bin/remove_ext $atlas_name`
             atlas_name="noFilt_${atlas_name}"
             
-            while [ -d ${OUTPUTDIR}/${atlas_name}.fc ] ; do 
-                atlas_name="${atlas_name}+"
-            done
+			  if [ $DO_ATLAS_CONN = 2 ] ; then
+			while [ -d ${OUTPUTDIR}/${atlas_name}.fc_mni ] ; do 
+					atlas_name="${atlas_name}+"
+				done
 
 
-            if [ ! -d ${OUTPUTDIR}/${atlas_name}.fc ] ; then
-                /bin/mkdir ${OUTPUTDIR}/${atlas_name}.fc
-            fi
+				if [ ! -d ${OUTPUTDIR}/${atlas_name}.fc_mni ] ; then
+					/bin/mkdir ${OUTPUTDIR}/${atlas_name}.fc_mni
+				fi
+				
+			
+			else
+				while [ -d ${OUTPUTDIR}/${atlas_name}.fc_mni ] ; do 
+					atlas_name="${atlas_name}+"
+				done
+
+
+				if [ ! -d ${OUTPUTDIR}/${atlas_name}.fc_mni ] ; then
+					/bin/mkdir ${OUTPUTDIR}/${atlas_name}.fc_mni
+				fi
+				
+			fi
+			
+			
             Nvols=`${FSLDIR}/bin/fslnvols $ATLAS_CONN`
             if [ $Nvols -le 1 ] ; then
                 echo "currecntly only support 4D FC rois in this script"
@@ -1929,7 +1963,73 @@ elif [ $DO_RESTING = 1 ] ; then
         fi
 
     elif [ $DO_ATLAS_CONN = 2 ] ; then 
-        echo "ruin in mni spave"
-        echo "ruin in mni spave"
+
+        echo "ruin in mni space"
+		USED_ATLAS=0
+		if [ `${FSLDIR}/bin/imtest ${ATLAS_CONN}` = 1 ] ; then #make sure atlasexistst
+            echo "Found $Nvols number of parcels"
+            #Register atlas to native space
+			USED_ATLAS=1
+	      label=1
+        if [ -f ${OUTPUTDIR}/${atlas_name}.fc_mni/labels.txt ] ; then 
+            /bin/rm ${OUTPUTDIR}/${atlas_name}.fc_mni/labels.txt
+        fi
+
+        while [ $label -le $Nvols ] ; do
+            echo "Creating labels.txt : $label : ${OUTPUTDIR}/${atlas_name}.fc_mni/labels.txt "
+            echo $label >> ${OUTPUTDIR}/${atlas_name}.fc_mni/labels.txt 
+            let label+=1
+        done
+
+
+			if [ $USE_MOTION = 1 ] ; then               
+
+				if [ ! -d ${OUTPUTDIR}/${atlas_name}.fc_mni/mc ] ; then 
+					echo "/bin/mkdir ${OUTPUTDIR}/${atlas_name}.fc_mni/mc"  >>${OUTPUTDIR}/log.txt
+					/bin/mkdir ${OUTPUTDIR}/${atlas_name}.fc_mni/mc
+				fi
+				echo "${FSLDIR}/bin/fslmaths ${INPUT_DATA} -Tmean ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/avg_func"  >>${OUTPUTDIR}/log.txt
+				${FSLDIR}/bin/fslmaths ${INPUT_DATA} -Tmean ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/avg_func
+
+				echo "${FSLDIR}/bin/fsl_glm --demean -i ${INPUT_DATA} -d ${OUTPUTDIR}/mc/prefiltered_func_data_mcf.par.txt -o ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_betas --out_res=${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_residuals"  >>${OUTPUTDIR}/log.txt
+				${FSLDIR}/bin/fsl_glm --demean -i ${INPUT_DATA} -d ${OUTPUTDIR}/mc/prefiltered_func_data_mcf.par.txt -o ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_betas --out_res=${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_residuals
+
+				echo "${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_residuals -add ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/avg_func ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_residuals -odt float"  >>${OUTPUTDIR}/log.txt
+				${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_residuals -add ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/avg_func ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_residuals -odt float
+
+
+				INPUT_DATA=${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_residuals
+				MOTION_FC="/mc/"
+
+			fi
+#XFM TO standard space 
+echo "${FSLDIR}/bin/applywarp -i ${INPUT_DATA} -r  ${STANDARD_BRAIN} -w ${OUTPUTDIR}/reg/highres2standard_warp --postmat=${OUTPUTDIR}/reg/example_func2highres.mat -m ${BRAIN_MASK_MNI} -o  ${INPUT_DATA}_2_mni   -d float"
+						${FSLDIR}/bin/applywarp -i ${INPUT_DATA} -r  ${STANDARD_BRAIN} -w ${OUTPUTDIR}/reg/highres2standard_warp --premat=${OUTPUTDIR}/reg/example_func2highres.mat -m /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o  ${INPUT_DATA}_2_mni   -d float 
+						INPUT_DATA=${INPUT_DATA}_2_mni
+						echo "Run connectivity "
+						${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${ATLAS_CONN} --atlas4D=${OUTPUTDIR}/${atlas_name}.fc_mni/labels.txt -m  /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
+
+		fi
+		
+		
+	#clean up the motion residuals                                                                                                                                                   
+        if [ $DO_DEL_FILTFUNC_RES = 1 ] ; then
+            if [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/${atlas_name}.fc_mni/filtered_func_data` = 1 ] ; then
+                ${FSLDIR}/bin/imrm ${OUTPUTDIR}/${atlas_name}.fc_mni/filtered_func_data
+            fi
+
+        fi
+
+
+
+        #clean up the motion residuals  
+        if [ $DO_DEL_MC_RES = 1 ] ; then
+            if [ $USE_MOTION = 1 ] ; then 
+                if [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_residuals` = 1 ] ; then 
+                    ${FSLDIR}/bin/imrm ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_residuals
+                fi
+            fi
+        fi
+		
     fi
 fi

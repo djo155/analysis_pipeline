@@ -2,7 +2,7 @@
 
 function Usage(){
 
-    echo "\n analysis_pipeline_qc.sh <raw_func_4D> <analysis directory>"
+    echo "\n analysis_pipeline_qc.sh  [ -struct_only ] <raw_func_4D> <analysis directory>"
 
 }
 
@@ -61,7 +61,10 @@ if [ $# = 0 ]; then
 
 fi
 
-
+STRUCT_ONLY=0
+if [ $1 = -struct_only ] ; then 
+    STRUCT_ONLY=1
+fi
 
 RAW_FUNC=$1
 ANALYSISDIR=$2

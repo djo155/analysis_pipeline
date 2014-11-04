@@ -14,7 +14,7 @@ function Usage(){
 }
 
 
-SGEARGS_ORIG="fsl_sub -q short.q"
+SGEARGS_ORIG="fsl_sub -q short.q -l logs_root"
 
 
 if [ $# = 0 ] ; then 
