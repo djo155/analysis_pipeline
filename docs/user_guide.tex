@@ -1,18 +1,67 @@
-\documentclass[]{article}
+\documentclass[]{report}
 \usepackage[margin=0.5in]{geometry}
 \usepackage{enumitem}
+\usepackage{alltt}  
 \setdescription{leftmargin=\parindent,labelindent=\parindent,style=sameline}
 
 \begin{document}
 
-\title{Analysis Pipleline User's guide}
+\title{Etkin Lab's Analysis Pipeline User's guide}
 \author{Brian Patenaude}
-\date{Today}
+\date{\today}
 \maketitle
+\begin{chapter}{Overview and Setup}
+\begin{section}{Introduction}
+Our  {\it analysis pipeline} is merely a bash script that bring together our structural and functional processing stream. It brings together components of FSL and SPM as well as integrates some custom code (typically implemented in C++).  
+\end{section}
+\begin{section}{Software requirements.}
 
-\begin{section}{Quick Cheat Sheet}
-The basic functions are those which I've found that most people use most frequently. They've been take from the scripts in from the various studies. For clarity I've used the image extensions in the examples, but they are not necessary.
-\begin{subsection}{Common options}
+This pipeline is for use on OSX or linux (tested on CentOS/RedHat). It requires the installation of FSL and SPM8. There will be some adjustments to the SPM8 configuration for our purposes. For OSX, it requires a version of readlink that is consistent with linux (i.e. has the -f option).
+
+\end{section}
+
+\begin{section}{Installation}
+\begin{subsection}{Getting the data}
+If you are reading this, you should already have access to the {\bf \it analysis\_pipeline} git repository that is hosted on \url{www.bitbucket.org}. The first step is to clone the repository into a local folder. The location is up to you, however, if you are planning to parallelize the jobs on a grid, it should by copied to a centralized location. The follow command will clone the repository, 
+
+\begin{alltt}
+\hspace	git clone https://bitbucket.org/bmpatena/analysis_pipeline
+\end{alltt}
+
+This will create a directory with an assortment of files in it needed for you to run the pipeline. Now it's time to setup your environment variables.
+
+\end{subsection}
+\begin{subsection}{Setting Up Environment }
+It is assumed at this point that FSL has been installed and you environment has been setup. I've set these environments computer wide by editing /etc/profile. Otherwise, you can add to you personal profile. From a lab management perspective, the former facilitate consistency across all users.
+
+\begin{alltt}
+#location of the install 
+export ANALYSIS_PIPE_DIR=/PATH_TO_SRC/analysis_pipeline/
+export PATH=${ANALYSIS_PIPE_DIR}:${PATH}
+
+#location of SPM install used for pipeline. 
+export SPM8DIR=/Applications/spm8_sge
+#fink
+source /sw/bin/init.sh
+\end{alltt}
+{Some Notes}
+\begin{itemize}
+	\item  I use a local copy of SPM for performance issues with network copy; may not be an issue for you.
+	\item  SPM image IO is not very friendly with network file system, this may be a cause of slow down if too many parallel instances exist.
+	\item {\it source /sw/bin/init.sh} is only need for OSX. fink is used to install a version of readlink that is consistent with linux.  
+\end{itemize}
+\end{subsection}
+
+\end{section}
+
+
+
+\end{chapter}
+\begin{chapter}{Quick Start Guide }
+
+\begin{section}{Common options}
+The basic options are those which I've found that most people use most frequently. They've been taken from scripts used from analyses that we have performed. For clarity I've used the image extensions in the examples, but they are not necessary.
+\begin{subsection}{}
 %\setlist[itemize]{leftmargin=2in}
 \begin{description}
 	\item [-func\_data {\it func\_4D}] :  Proceeded by the 4D functional data (EPI or spiral).
@@ -29,14 +78,40 @@ The basic functions are those which I've found that most people use most frequen
 	\item[-deleteVolumes] : Proceeded by an integer. The number of volumes to be deleted from the beginning of the time series.
 \end{description}
 \end{subsection}
+\begin{subsection}{Running Structural Analysis}
+I typically run the structural analyses as a separate stage. This is done for 2 reasons: 1) To be able to QC the registration prior to proceeding with first level models. 2) With multiple functional tasks, each can just reference (and link to) this analysis. This save a lot of computation time. 
+
+To run the structural analysis, 
+\begin{alltt}
+analysis_pipeline.sh -struct_only -t1 subjectID_struct_t1.nii.gz  -output_extension struct_only
+\end{alltt}
+
+
+
+\end{section}
+
 \begin{subsection}{Run a basic first level analysis}
 \
-{\it \bf analysis\_pipeline.sh}   {\bf -func\_data} fmri\_4D.nii.gz  {\bf -t1} structural\_image.nii.gz  {\bf -reg\_info} structural\_image.struct\_extension   \\
-\hspace*{1.3in} {\bf -design} spm\_design\_matrix.mat  {\bf -spm\_contrast}  spm\_contrast\_file.m  {\bf -model\_name} name\_of\_model   \\
-\hspace*{1.3in} {\bf -output\_extension} analysis\_directory\_extension  {\bf -motion}  {\bf -tr} TR  \\
-\hspace*{1.3in}{\bf -deleteVolumes} Number\_of\_Volumes\_to\_Delete
+\begin{alltt}
+analysis\_pipeline.sh  -func\_data <fmri\_4D.nii.gz>   -t1 <subjectID_struct_t1.nii.gz>  \backslash  \\
+\hspace*{0.5in} -reg\_info <subjectID_struct_t1.struct_only> -design <spm\_design\_matrix.mat> \backslash  \\
+\hspace*{0.5in} -spm\_contrast  <spm\_contrast\_file.m> -model\_name <name\_of\_model> \backslash   \\
+\hspace*{0.5in} -output\_extension <analysis\_directory\_extension>  -motion -tr <TR> \backslash  \\
+\hspace*{0.5in} -deleteVolumes <Number\_of\_Volumes\_to\_Delete>
+\end{alltt}
+{Some Notes}
+\begin{itemize}
+	\item  The SPM design matrix should already account for the volumes to be deleted.
+\end{itemize}
+
 \end{subsection}
 
 \end{section}
+
+\end{chapter}
+
+\begin{chapter}{Guide to Data Structure and Files}
+
+\end{chapter}
 
 \end{document}

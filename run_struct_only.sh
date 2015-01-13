@@ -14,7 +14,18 @@ function Usage(){
 }
 
 
-SGEARGS_ORIG="fsl_sub -q short.q -l logs_root"
+SGEARGS_ORIG="fsl_sub -q short.q "
+LOGARG=logs_root
+
+if [ $# = 0 ] ; then 
+    Usage
+    exit 1
+fi
+
+if [ $1 = -l ] ; then 
+    LOGARG=$2
+    shift 2
+fi
 
 
 if [ $# = 0 ] ; then 
@@ -22,25 +33,22 @@ if [ $# = 0 ] ; then
     exit 1
 fi
 
-if [ $1 = -nogrid ] ; then 
+SGEARGS_ORIG="${SGEARGS_ORIG} -l $LOGARG"
+#takes in t1 images as input
+
+if [ $1 = -nogrid ] ; then
     SGEARGS_ORIG=""
     shift 1
 fi
 
-if [ $# = 0 ] ; then 
-    Usage
-    exit 1
-fi
 
-
-#takes in t1 images as input
 
 #Loop over images
 for i in $@ ; do 
     i=`remove_ext $i`
     echo $i 
     if [ ! -d ${i}.struct_only ] ; then     
-	${SGEARGS_ORIG} analysis_pipeline.sh -struct_only -t1 $i  -output_extension struct_only
+ 	${SGEARGS_ORIG} analysis_pipeline.sh -struct_only -t1 $i  -output_extension struct_only
     fi
 done
 
