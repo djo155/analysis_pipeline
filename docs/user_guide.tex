@@ -2,6 +2,9 @@
 \usepackage[margin=0.5in]{geometry}
 \usepackage{enumitem}
 \usepackage{alltt}  
+\usepackage{hyperref}
+
+
 \setdescription{leftmargin=\parindent,labelindent=\parindent,style=sameline}
 
 \begin{document}
@@ -25,7 +28,7 @@ This pipeline is for use on OSX or linux (tested on CentOS/RedHat). It requires 
 If you are reading this, you should already have access to the {\bf \it analysis\_pipeline} git repository that is hosted on \url{www.bitbucket.org}. The first step is to clone the repository into a local folder. The location is up to you, however, if you are planning to parallelize the jobs on a grid, it should by copied to a centralized location. The follow command will clone the repository, 
 
 \begin{alltt}
-\hspace	git clone https://bitbucket.org/bmpatena/analysis_pipeline
+\hspace*{0.5in} 	git clone https://bitbucket.org/bmpatena/analysis_pipeline
 \end{alltt}
 
 This will create a directory with an assortment of files in it needed for you to run the pipeline. Now it's time to setup your environment variables.
@@ -37,7 +40,7 @@ It is assumed at this point that FSL has been installed and you environment has 
 \begin{alltt}
 #location of the install 
 export ANALYSIS_PIPE_DIR=/PATH_TO_SRC/analysis_pipeline/
-export PATH=${ANALYSIS_PIPE_DIR}:${PATH}
+export PATH=\${ANALYSIS_PIPE_DIR}:\${PATH}
 
 #location of SPM install used for pipeline. 
 export SPM8DIR=/Applications/spm8_sge
@@ -61,7 +64,6 @@ source /sw/bin/init.sh
 
 \begin{section}{Common options}
 The basic options are those which I've found that most people use most frequently. They've been taken from scripts used from analyses that we have performed. For clarity I've used the image extensions in the examples, but they are not necessary.
-\begin{subsection}{}
 %\setlist[itemize]{leftmargin=2in}
 \begin{description}
 	\item [-func\_data {\it func\_4D}] :  Proceeded by the 4D functional data (EPI or spiral).
@@ -77,34 +79,32 @@ The basic options are those which I've found that most people use most frequentl
 	\item[-tr] : Proceeded by a number. The number is the TR from the acquisition sequence in seconds(time between time points).
 	\item[-deleteVolumes] : Proceeded by an integer. The number of volumes to be deleted from the beginning of the time series.
 \end{description}
-\end{subsection}
-\begin{subsection}{Running Structural Analysis}
+\end{section}
+\begin{section}{Running Structural Analysis}
 I typically run the structural analyses as a separate stage. This is done for 2 reasons: 1) To be able to QC the registration prior to proceeding with first level models. 2) With multiple functional tasks, each can just reference (and link to) this analysis. This save a lot of computation time. 
 
 To run the structural analysis, 
 \begin{alltt}
-analysis_pipeline.sh -struct_only -t1 subjectID_struct_t1.nii.gz  -output_extension struct_only
+analysis_pipeline.sh -struct_only -t1 subjectID\_struct\_t1.nii.gz  -output\_extension struct\_only
 \end{alltt}
 
 
 
 \end{section}
 
-\begin{subsection}{Run a basic first level analysis}
+\begin{section}{Run a basic first level analysis}
 \
 \begin{alltt}
-analysis\_pipeline.sh  -func\_data <fmri\_4D.nii.gz>   -t1 <subjectID_struct_t1.nii.gz>  \backslash  \\
-\hspace*{0.5in} -reg\_info <subjectID_struct_t1.struct_only> -design <spm\_design\_matrix.mat> \backslash  \\
-\hspace*{0.5in} -spm\_contrast  <spm\_contrast\_file.m> -model\_name <name\_of\_model> \backslash   \\
-\hspace*{0.5in} -output\_extension <analysis\_directory\_extension>  -motion -tr <TR> \backslash  \\
+analysis\_pipeline.sh  -func\_data <fmri\_4D.nii.gz>   -t1 <subjectID\_struct\_t1.nii.gz>  \textbackslash \\
+\hspace*{0.5in} -reg\_info <subjectID\_struct\_t1.struct\_only> -design <spm\_design\_matrix.mat> \textbackslash  \\
+\hspace*{0.5in} -spm\_contrast  <spm\_contrast\_file.m> -model\_name <name\_of\_model> \textbackslash   \\
+\hspace*{0.5in} -output\_extension <analysis\_directory\_extension>  -motion -tr <TR> \textbackslash  \\
 \hspace*{0.5in} -deleteVolumes <Number\_of\_Volumes\_to\_Delete>
 \end{alltt}
 {Some Notes}
 \begin{itemize}
 	\item  The SPM design matrix should already account for the volumes to be deleted.
 \end{itemize}
-
-\end{subsection}
 
 \end{section}
 
