@@ -111,6 +111,8 @@ function func_check_param {
 
 }
 
+#shows what machien ran, handy for debugging grid
+hostname >> ${OUTPUTDIR}/log.txt 
 
 NSESSIONS=0
 #all input options need to start with "-"

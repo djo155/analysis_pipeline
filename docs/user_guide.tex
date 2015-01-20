@@ -33,6 +33,9 @@ If you are reading this, you should already have access to the {\bf \it analysis
 
 This will create a directory with an assortment of files in it needed for you to run the pipeline. Now it's time to setup your environment variables.
 
+The file spm_defaults.m should be used instead of that distributed by spm. There is two differences: 1) disables the implicit masking (i.e. set threshold to -inf)  and 2) defaults.cmdline=true which is used to disable the GUI. The latter is required in order to parallelize/run in background.
+
+
 \end{subsection}
 \begin{subsection}{Setting Up Environment }
 It is assumed at this point that FSL has been installed and you environment has been setup. I've set these environments computer wide by editing /etc/profile. Otherwise, you can add to you personal profile. From a lab management perspective, the former facilitate consistency across all users.
