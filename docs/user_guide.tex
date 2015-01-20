@@ -33,7 +33,7 @@ If you are reading this, you should already have access to the {\bf \it analysis
 
 This will create a directory with an assortment of files in it needed for you to run the pipeline. Now it's time to setup your environment variables.
 
-The file spm_defaults.m should be used instead of that distributed by spm. There is two differences: 1) disables the implicit masking (i.e. set threshold to -inf)  and 2) defaults.cmdline=true which is used to disable the GUI. The latter is required in order to parallelize/run in background.
+The file spm\_defaults.m should be used instead of that distributed by spm. There is two differences: 1) disables the implicit masking (i.e. set threshold to -inf)  and 2) defaults.cmdline=true which is used to disable the GUI. The latter is required in order to parallelize/run in background.
 
 
 \end{subsection}
@@ -42,11 +42,11 @@ It is assumed at this point that FSL has been installed and you environment has 
 
 \begin{alltt}
 #location of the install 
-export ANALYSIS_PIPE_DIR=/PATH_TO_SRC/analysis_pipeline/
+export ANALYSIS\_PIPE\_DIR=/PATH\_TO\_SRC/analysis\_pipeline/
 export PATH=\${ANALYSIS_PIPE_DIR}:\${PATH}
 
 #location of SPM install used for pipeline. 
-export SPM8DIR=/Applications/spm8_sge
+export SPM8DIR=/Applications/spm8\_sge
 #fink
 source /sw/bin/init.sh
 \end{alltt}
@@ -84,7 +84,8 @@ The basic options are those which I've found that most people use most frequentl
 \end{description}
 \end{section}
 \begin{section}{Running Structural Analysis}
-I typically run the structural analyses as a separate stage. This is done for 2 reasons: 1) To be able to QC the registration prior to proceeding with first level models. 2) With multiple functional tasks, each can just reference (and link to) this analysis. This save a lot of computation time. 
+I typically run the structural analyses as a separate stage. This is done for 2 reasons: 1) To be able to QC the registration prior to proceeding with first level models. 2) With multiple functional tasks, each can just reference (and link to) this analysis. This saves a lot of computation time.  Before running, please see the notes on orientation below. Orientation of the images are assumed to be handled in advance and is not accounted for in these scripts.
+\\
 
 To run the structural analysis, 
 \begin{alltt}
@@ -92,6 +93,15 @@ analysis_pipeline.sh -struct_only -t1 subjectID\_struct\_t1.nii.gz  -output\_ext
 \end{alltt}
 
 
+\begin{subsection}{Notes on Orientation}
+Generally speaking the orientation should be that which matches the MNI template. This is the common orientation used by FSL and SPM.  This sometimes differs from what's output by DICOM converters. For example, {\bf Freesurfer}'s {\it mri\_convert} tool. To re-orient the image I use  {\it fslreorient2std}, this does require properly set NIFTI headers. Note that the orientation labels for an image will be displayed along side the image in {\bf FSLview}.
+\begin{subsubsection}{Radiological vs Neurological}
+***PLEASE BE VERY CAREFUL with left/right orientation. Although, to my knowledge, FSL handles the Radiological vs Neurological orientation internally and is accounted for in all tools, this may not be the case for all tools.  By default, we convert everything into Radiological format upon reconstruction. ***CAUTION***  should be take when doing this since it may not be evident when done incorrectly. Refer to \url{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Fslutils} for more details. 
+
+\end{subsubsection}
+
+
+\end{subsection}
 
 \end{section}
 
