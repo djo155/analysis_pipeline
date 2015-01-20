@@ -3,6 +3,8 @@
 \usepackage{enumitem}
 \usepackage{alltt}  
 \usepackage{hyperref}
+\usepackage{color}
+
 
 
 \setdescription{leftmargin=\parindent,labelindent=\parindent,style=sameline}
@@ -54,7 +56,7 @@ source /sw/bin/init.sh
 \begin{itemize}
 	\item  I use a local copy of SPM for performance issues with network copy; may not be an issue for you.
 	\item  SPM image IO is not very friendly with network file system, this may be a cause of slow down if too many parallel instances exist.
-	\item {\it source /sw/bin/init.sh} is only need for OSX. fink is used to install a version of readlink that is consistent with linux.  
+	\item {\it source /sw/bin/init.sh} is only need for OSX. fink is used to install a version of {\it readlink} that is consistent with linux.  
 \end{itemize}
 \end{subsection}
 
@@ -124,6 +126,61 @@ analysis\_pipeline.sh  -func\_data <fmri\_4D.nii.gz>   -t1 <subjectID\_struct\_t
 \end{chapter}
 
 \begin{chapter}{Guide to Data Structure and Files}
+The data structure mostly follows that laid out in FSL with some obvious differences due to our incorporation of SPM. The following section are separated by folder that are created in the analysis directory.
+\begin{description}
+	\item [struct ]  : Structural processing information.  
+	\item [reg] :  Registration information.
+	\item [model.spm ] : First level SPM models (native functional space). 
+	\item [reg\_standard ] : Contrast images transformed into standard space.
+\end{description}
+\begin{section}{struct}
+	\begin{description}
+	
+	\item[orig.nii.gz] : Copy of the original structural image.\\
+	
+	{\large Produced by \href{http://fsl.fmrib.ox.ac.uk/fsl/fsl-4.1.9/first/index.html}{\color{blue} first\_flirt} : }
+	\begin{description}
+	
+		 \item[first\_flirt.mat] : Estimate of linear transform for {\bf FIRST}'s subcortical models. 
+		\item[first\_flirt.nii.gz] : {\it orig.nii.gz} transformed to 1mm MNI space using {\it first\_flirt.mat }
+		\item[first\_flirt\_cort.mat] :
+		\item[first\_flirt\_cort.nii.gz] :
+		\item[first\_flirt\_cort\_inv.mat] :
+		\item[first\_flirt\_tmp\_cort\_stage2.mat] :
+	\end{description}
+	Using  \href{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FLIRT}{\color{blue} FLIRT} to transform MNI space brain mask, {\it mni\_bet\_1mm\_mask.nii.gz}, to structural space and apply to images using {\bf fslmaths}: 
+	\begin{description}
+		\item[brain\_mask.nii.gz] : Transformed brain mask in structural space.
+		\item[brain.nii.gz] : An initial estimate of the brain (i.e. brain extraction) using {\bf first\_flirt } and a standard space MNI mask. 
+	\end{description}
+
+	Produced using  \href{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FNIRT}{\color{blue} FNIRT}, with {\it orig.nii.gz} and {\it brain.nii.gz} as input.
+	\begin{description}
+		\item[brain\_fnirt.nii.gz] : A refined estimate of the brain voxels using {\bf FNIRT}.
+		\item[brain\_fnirt\_bias.nii.gz] : Bias field estimate produce by  {\bf FNIRT}.
+		\item[brain\_fnirt\_mask.nii.gz] : Binary mask of the estimate brain voxels (propagating standard space mask via {\bf FNIRT}).
+		\item[orig\_to\_MNI152\_T1\_2mm.log] :
+	\end{description}
+
+	Applying  \href{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FAST}{\color{blue} FAST} to  {\it brain\_fnirt.nii.gz} produces, 
+	\begin{description}
+		\item[brain\_fnirt\_mixeltype.nii.gz] :
+		\item[brain\_fnirt\_pve\_0.nii.gz] :
+		\item[brain\_fnirt\_pve\_1.nii.gz] :
+		\item[brain\_fnirt\_pve\_2.nii.gz] :
+		\item[brain\_fnirt\_pveseg.nii.gz] :
+		\item[brain\_fnirt\_seg.nii.gz] :
+		\item[brain\_fnirt\_wmseg.nii.gz] :
+	\end{description}
+
+	Applying \href{http://fsl.fmrib.ox.ac.uk/fsl/fsl-4.1.9/first/index.html}{\color{blue} FIRST } to  {\it orig.nii.gz} produces, 
+	\begin{description}
+	\item[first] : A directory containing individual model fits 
+	\item[first\_all\_fast\_firstseg.nii.gz] : The combined subcortical segmentation image
+		\end{description}
+		\end{description}
+
+\end{section}
 
 \end{chapter}
 
