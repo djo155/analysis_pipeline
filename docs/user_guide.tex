@@ -35,7 +35,7 @@ If you are reading this, you should already have access to the {\bf \it analysis
 
 This will create a directory with an assortment of files in it needed for you to run the pipeline. Now it's time to setup your environment variables.
 
-The file spm\_defaults.m should be used instead of that distributed by spm. There is two differences: 1) disables the implicit masking (i.e. set threshold to -inf)  and 2) defaults.cmdline=true which is used to disable the GUI. The latter is required in order to parallelize/run in background.
+The file spm\_defaults.m should be used instead of that distributed by spm. There is two differences: 1) disables the implicit masking (i.e. set threshold to -inf)  and 2) defaults.cmdline=true which is used to disable the GUI. The latter is required in order to parallelize/run in background. This file needs to substitute that which is in SPM.
 
 
 \end{subsection}
@@ -96,12 +96,36 @@ analysis_pipeline.sh -struct_only -t1 subjectID\_struct\_t1.nii.gz  -output\_ext
 
 
 \begin{subsection}{Notes on Orientation}
-Generally speaking the orientation should be that which matches the MNI template. This is the common orientation used by FSL and SPM.  This sometimes differs from what's output by DICOM converters. For example, {\bf Freesurfer}'s {\it mri\_convert} tool. To re-orient the image I use  {\it fslreorient2std}, this does require properly set NIFTI headers. Note that the orientation labels for an image will be displayed along side the image in {\bf FSLview}.
+Generally speaking the orientation should be that which matches the MNI template. This is the common orientation used by FSL and SPM.  This sometimes differs from what's output by DICOM converters. For example, {\bf Freesurfer}'s {\it mri\_convert} tool. To re-orient the image I use  {\it fslreorient2std}, this does require properly set NIFTI headers. Note that the orientation labels for an image will be displayed along side the image in {\bf FSLView}.
 \begin{subsubsection}{Radiological vs Neurological}
 ***PLEASE BE VERY CAREFUL with left/right orientation. Although, to my knowledge, FSL handles the Radiological vs Neurological orientation internally and is accounted for in all tools, this may not be the case for all tools.  By default, we convert everything into Radiological format upon reconstruction. ***CAUTION***  should be take when doing this since it may not be evident when done incorrectly. Refer to \url{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Fslutils} for more details. 
 
 \end{subsubsection}
+\end{subsection}
 
+\begin{subsection}{Checking your data}
+The following commands assume that you are in the analysis directory. I use \href{fsl.fmrib.ox.ac.uk/fsl/fslview}{FSLView} to overlay 
+and check images. 
+Let's first check to see if the brain extraction worked. 
+\begin{alltt}
+\indent fslview struct/orig struct/brain\_fnirt
+\end{alltt}
+If you'd like to view the difference FNIRT adds to the brain mask you can overlay both brains,
+ \begin{alltt}
+\indent  fslview struct/orig  struct/brain struct/brain\_fnirt
+\end{alltt}
+Let's check the structural to MNI space registration,
+ \begin{alltt}
+\indent  fslview data/standard/MNI152_T1_2mm  reg/highres2standard_warped.nii.gz
+\end{alltt}
+Checking tissue segmentation,
+ \begin{alltt}
+\indent  fslview struct/orig  struct/brain\_fnirt\_seg.nii.gz
+\end{alltt}
+Checking subcortical segmentation,
+ \begin{alltt}
+\indent  fslview struct/orig  struct/first\_all\_fast\_firstseg.nii.gz 
+\end{alltt}
 
 \end{subsection}
 
