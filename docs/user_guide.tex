@@ -170,6 +170,45 @@ analysis\_pipeline.sh  -func\_data <fmri\_4D.nii.gz>   -t1 <subjectID\_struct\_t
 
 \end{section}
 
+
+\begin{section}{Run a first level resting state analysis}
+\
+\begin{alltt}
+analysis\_pipeline.sh  {\bf-resting  -no_resting_gm_mask -resting\_first\_regions } <L_Region1 R_Region1 L_RegionN R_RegionN>  \textbackslash \\
+\hspace*{0.5in}  \left[ \bf-fc\_rois\_native, -fc\_rois\_mni \right]  <atlas.nii.gz>  \textbackslash \\
+\hspace*{0.5in}  {\bf -atlas\_conn\_opts } <command\_separated\_atlas\_conn\_opts>  \textbackslash \\
+\hspace*{0.5in}  -func\_data <fmri\_4D.nii.gz>   -t1 <subjectID\_struct\_t1.nii.gz>  \textbackslash \\
+\hspace*{0.5in} -reg\_info <subjectID\_struct\_t1.struct\_only> -design <spm\_design\_matrix.mat> \textbackslash  \\
+\hspace*{0.5in} -spm\_contrast  <spm\_contrast\_file.m> -model\_name <name\_of\_model> \textbackslash   \\
+\hspace*{0.5in} -output\_extension <analysis\_directory\_extension>  -motion -tr <TR> \textbackslash  \\
+\hspace*{0.5in} -deleteVolumes <Number\_of\_Volumes\_to\_Delete>
+\end{alltt}
+\begin{description}
+	\item [-fc\_rois\_native, -fc\_rois\_mni  ]  : Choose whether to perform connectivity in native functional space or MNI. Not all features are implemented for MNI space analysis.
+	\item [-resting] :  Do resting analysis.
+	\item [-resting\_first\_regions ] : Include individualized subcortical segmentations.
+	\item [ -atlas\_conn\_opts] : Provide options to the atlas_connectivity program used to calculate resting state connectivity (i.e. correlation).
+	\begin{description}
+	\item [--useAllLabels  ]  : Use all labels (ROIs) in the atlas
+	\item [--doCalcSingleLabel\_FC] :  Do voxel-wise correlations.
+	\end{description}
+
+\end{description}
+
+
+
+\begin{subsubsection}{Example}
+\begin{alltt}
+analysis\_pipeline.sh -resting -no_resting_gm_mask -func\_data sub0001\_resting4D.nii.gz -t1 sub0001_t1  -tr 2 -deleteVolumes 5 \textbackslash  \\
+\hspace*{0.5in} -reg_info sub0001\_t1.struct_only -resting_first_regions L\_Amyg R\_Amyg L\_Accu R\_Accu L\_Pall R\_Pall \textbackslash  \\
+\hspace*{0.5in} L\_Caud R\_Caud L\_Thal R\_Thal L\_Hipp R\_Hipp L\_Puta R\_Puta -fc\_rois\_native compsite_atlas.nii.gz  \textbackslash  \\
+\hspace*{0.5in} -atlas_conn_opts --useAllLabels,--doCalcSingleLabel\_FC  -motion -output_extension connectivity
+\end{alltt}
+\end{subsubsection}
+
+\end{section}
+
+
 \end{chapter}
 
 \begin{chapter}{Guide to Data Structure and Files}

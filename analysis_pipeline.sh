@@ -1891,8 +1891,9 @@ elif [ $DO_RESTING = 1 ] ; then
 
         fi
 
-        echo "${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}" >>${OUTPUTDIR}/log.txt
-	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
+        echo "${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}" >>${OUTPUTDIR}/log.txt
+	# ${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
+	 ${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
 
 echo RUN GBC HERE 
 	#run gbc
