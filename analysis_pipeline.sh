@@ -61,7 +61,7 @@ Usage() {
     echo "-no_clean_mcresiduals " 
     echo "-resting : run using resting state mode (difference in filtering)."
     echo "-resting_vols : Number of Volumes to Keep. Trim remaing from end."
-
+    echo "-doGBC"
     echo "-resting_first_regions : Specify FIRST structures for resting connectivity. e.g. L_Amyg R_Amyg"
     echo "-seedtarget : filename of text file containing 0s and 1s representing seeds and targets."
     echo "-smooth_mm : FWHM of smooth kernel (default is 6 mm)"
@@ -168,6 +168,7 @@ DO_PPI=0
 DO_FILTERING=1
 PPI_COUNT=0
 DO_RESTING=0
+DO_GBC=0
 DO_FC=1
 VERBOSE=0
 SAVE_GLB_SIG=0
@@ -425,6 +426,8 @@ while [ $# != 0 ] ; do
     elif [ ${1} = -no_resting_gm_mask ] ; then 
         RESTING_GM_MASK=0
         shift 1
+elif [ ${1} -doGBC ] ; then
+DO_GBC=1
     elif [ ${1} = -ppi_only ] ; then
         DO_BET=0
 	DO_DELVOLS=0
@@ -1894,12 +1897,12 @@ elif [ $DO_RESTING = 1 ] ; then
         echo "${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}" >>${OUTPUTDIR}/log.txt
 	# ${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
 	 ${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
-
+if [ $DO_GBC = 1 ] ; then
 echo RUN GBC HERE 
 	#run gbc
 	echo "	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC"  >>${OUTPUTDIR}/log.txt
 	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC
-
+fi
 	#run_alff
 	{
 	    echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}

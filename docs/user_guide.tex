@@ -68,15 +68,15 @@ source /sw/bin/init.sh
 Run the following commands ate the command line once your environment has been setup. Depending 
 \begin{subsubsection}{OSX}
 \begin{alltt}
-	ln -s $\{ANALYSIS\_PIPE\_DIR\}/bin/atlas_connectivity_osx10.9 \$\{ETKINLAB\_DIR\}/bin/atlas_connectivity
-	ln -s $\{ANALYSIS\_PIPE\_DIR\}/bin/run_alff_osx10.9 \$\{ETKINLAB\_DIR\}/bin/run_alff
+	ln -s \$\{ANALYSIS\_PIPE\_DIR\}/bin/atlas_connectivity_osx10.9 \$\{ETKINLAB\_DIR\}/bin/atlas_connectivity
+	ln -s \$\{ANALYSIS\_PIPE\_DIR\}/bin/run_alff_osx10.9 \$\{ETKINLAB\_DIR\}/bin/run_alff
 \end{alltt}
 \end{subsubsection}
 
 \begin{subsubsection}{CentOS/RedHat}
 \begin{alltt}
-	ln -s $\{ANALYSIS\_PIPE\_DIR\}/bin/atlas_connectivity_x86_64 \$\{ETKINLAB\_DIR\}/bin/atlas_connectivity
-	ln -s $\{ANALYSIS\_PIPE\_DIR\}/bin/run_alff_x86_64 \$\{ETKINLAB\_DIR\}/bin/run_alff
+	ln -s \$\{ANALYSIS\_PIPE\_DIR\}/bin/atlas_connectivity_x86_64 \$\{ETKINLAB\_DIR\}/bin/atlas_connectivity
+	ln -s \$\{ANALYSIS\_PIPE\_DIR\}/bin/run_alff_x86_64 \$\{ETKINLAB\_DIR\}/bin/run_alff
 \end{alltt}
 
 \end{subsubsection}
@@ -175,7 +175,7 @@ analysis\_pipeline.sh  -func\_data <fmri\_4D.nii.gz>   -t1 <subjectID\_struct\_t
 \
 \begin{alltt}
 analysis\_pipeline.sh  {\bf-resting  -no_resting_gm_mask -resting\_first\_regions } <L_Region1 R_Region1 L_RegionN R_RegionN>  \textbackslash \\
-\hspace*{0.5in}  \left[ \bf-fc\_rois\_native, -fc\_rois\_mni \right]  <atlas.nii.gz>  \textbackslash \\
+\hspace*{0.5in}  [ \bf-fc\_rois\_native, -fc\_rois\_mni ]  <atlas.nii.gz>  \textbackslash \\
 \hspace*{0.5in}  {\bf -atlas\_conn\_opts } <command\_separated\_atlas\_conn\_opts>  \textbackslash \\
 \hspace*{0.5in}  -func\_data <fmri\_4D.nii.gz>   -t1 <subjectID\_struct\_t1.nii.gz>  \textbackslash \\
 \hspace*{0.5in} -reg\_info <subjectID\_struct\_t1.struct\_only> -design <spm\_design\_matrix.mat> \textbackslash  \\
@@ -187,7 +187,7 @@ analysis\_pipeline.sh  {\bf-resting  -no_resting_gm_mask -resting\_first\_region
 	\item [-fc\_rois\_native, -fc\_rois\_mni  ]  : Choose whether to perform connectivity in native functional space or MNI. Not all features are implemented for MNI space analysis.
 	\item [-resting] :  Do resting analysis.
 	\item [-resting\_first\_regions ] : Include individualized subcortical segmentations.
-	\item [ -atlas\_conn\_opts] : Provide options to the atlas_connectivity program used to calculate resting state connectivity (i.e. correlation).
+	\item [ -atlas\_conn\_opts ] : Provide options to the atlas\_connectivity program used to calculate resting state connectivity (i.e. correlation).
 	\begin{description}
 	\item [--useAllLabels  ]  : Use all labels (ROIs) in the atlas
 	\item [--doCalcSingleLabel\_FC] :  Do voxel-wise correlations.
@@ -199,10 +199,11 @@ analysis\_pipeline.sh  {\bf-resting  -no_resting_gm_mask -resting\_first\_region
 
 \begin{subsubsection}{Example}
 \begin{alltt}
-analysis\_pipeline.sh -resting -no_resting_gm_mask -func\_data sub0001\_resting4D.nii.gz -t1 sub0001_t1  -tr 2 -deleteVolumes 5 \textbackslash  \\
-\hspace*{0.5in} -reg_info sub0001\_t1.struct_only -resting_first_regions L\_Amyg R\_Amyg L\_Accu R\_Accu L\_Pall R\_Pall \textbackslash  \\
-\hspace*{0.5in} L\_Caud R\_Caud L\_Thal R\_Thal L\_Hipp R\_Hipp L\_Puta R\_Puta -fc\_rois\_native compsite_atlas.nii.gz  \textbackslash  \\
-\hspace*{0.5in} -atlas_conn_opts --useAllLabels,--doCalcSingleLabel\_FC  -motion -output_extension connectivity
+analysis\_pipeline.sh -resting -no_resting_gm_mask -func\_data sub0001\_resting4D.nii.gz -t1 sub0001_t1  -tr 2  \textbackslash  \\
+\hspace*{0.5in} -deleteVolumes 5 -reg_info sub0001\_t1.struct_only -resting_first_regions L\_Amyg R\_Amyg L\_Accu R\_Accu \textbackslash  \\
+\hspace*{0.5in} L\_Pall   R\_Pall L\_Caud R\_Caud L\_Thal R\_Thal L\_Hipp R\_Hipp L\_Puta R\_Puta   \textbackslash  \\
+\hspace*{0.5in} -fc\_rois\_native compsite_atlas.nii.gz -atlas_conn_opts --useAllLabels,--doCalcSingleLabel\_FC   \textbackslash  \\
+\hspace*{0.5in} -motion -output_extension connectivity
 \end{alltt}
 \end{subsubsection}
 
