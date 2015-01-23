@@ -40,13 +40,13 @@ The file spm\_defaults.m should be used instead of that distributed by spm. Ther
 
 \end{subsection}
 \begin{subsection}{Setting Up Environment }
-It is assumed at this point that FSL has been installed and you environment has been setup. I've set these environments computer wide by editing /etc/profile. Otherwise, you can add to you personal profile. From a lab management perspective, the former facilitate consistency across all users.
-
+It is assumed at this point that FSL has been installed and you environment has been setup. I've set these environments computer wide by editing /etc/profile. Otherwise, you can add to you personal profile. From a lab management perspective, the former facilitate consistency across all users. Note that the variable ETKINLAB\_DIR is set to ANALYSIS\_PIPE\_DIR. For distribution, I've included builds for the necessary tools within the analysis\_pipeline directory
+ 
 \begin{alltt}
 #location of the install 
 export ANALYSIS\_PIPE\_DIR=/PATH\_TO\_SRC/analysis\_pipeline/
-export PATH=\${ANALYSIS_PIPE_DIR}:\${PATH}
-
+export PATH=\$\{ANALYSIS_PIPE_DIR\}:\$\{PATH\}
+export \$\{ETKINLAB\_DIR\}=\$\{ANALYSIS\_PIPE\_DIR\}
 #location of SPM install used for pipeline. 
 export SPM8DIR=/Applications/spm8\_sge
 #fink
@@ -62,6 +62,29 @@ source /sw/bin/init.sh
 
 \end{section}
 
+\begin{section}{Enabling appropriate binaries}
+
+\$\{ANALYSIS\_PIPE\_DIR\}/bin contain binaries for OSX and CentOS/RedHat distribution. We just need create links to the appropriate binaries for you system. 
+Run the following commands ate the command line once your environment has been setup. Depending 
+\begin{subsubsection}{OSX}
+\begin{alltt}
+	ln -s $\{ANALYSIS\_PIPE\_DIR\}/bin/atlas_connectivity_osx10.9 \$\{ETKINLAB\_DIR\}/bin/atlas_connectivity
+	ln -s $\{ANALYSIS\_PIPE\_DIR\}/bin/run_alff_osx10.9 \$\{ETKINLAB\_DIR\}/bin/run_alff
+\end{alltt}
+\end{subsubsection}
+
+\begin{subsubsection}{CentOS/RedHat}
+\begin{alltt}
+	ln -s $\{ANALYSIS\_PIPE\_DIR\}/bin/atlas_connectivity_x86_64 \$\{ETKINLAB\_DIR\}/bin/atlas_connectivity
+	ln -s $\{ANALYSIS\_PIPE\_DIR\}/bin/run_alff_x86_64 \$\{ETKINLAB\_DIR\}/bin/run_alff
+\end{alltt}
+
+\end{subsubsection}
+
+Depending on your system setup up, ETKINLAB\_DIR can point to a local directory. This allows for the use of different architecture.
+
+
+\end{section}
 
 
 \end{chapter}
