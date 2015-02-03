@@ -171,6 +171,7 @@ PPI_COUNT=0
 DO_RESTING=0
 DO_GBC=0
 DO_FC=1
+DO_QC=1
 VERBOSE=0
 SAVE_GLB_SIG=0
 DO_DEL_MC_RES=1
@@ -190,6 +191,7 @@ RESTING_VOLS=0;
 OUT_EXT=emoconflict
 OUTPUTDIR=""
 OUTPUTDIR_BASE=""
+FUNC_DATA_ORIG=""
 
 MODEL_NAME=model
 VERBOSE_PARAM=""
@@ -211,6 +213,7 @@ while [ $# != 0 ] ; do
 	#echo func $1
 	FUNC_DATA=`readlink -f $1`
 	FUNC_DATA=`remove_ext $FUNC_DATA`
+    FUNC_DATA_ORIG=$FUNC_DATA
 	nonetest=`basename $FUNC_DATA`
 	echo nonetest $nonetest
         if [ ! $nonetest = none ]; then
@@ -360,6 +363,7 @@ while [ $# != 0 ] ; do
         DO_MODEL=0
         DO_CONTRAST=0
         DO_APPLYREG=0
+        DO_QC=0
         shift 1 
     elif [ ${1} = -no_fast ] ; then 
         DO_FAST=0
@@ -379,6 +383,7 @@ while [ $# != 0 ] ; do
         DO_MODEL=0
         DO_CONTRAST=0
         DO_APPLYREG=0
+DO_QC=0
         shift 1
     elif [ ${1} = -struct_only ] ; then
         BET_ONLY=1
@@ -393,6 +398,7 @@ while [ $# != 0 ] ; do
         DO_MODEL=0
         DO_CONTRAST=0
         DO_APPLYREG=0
+DO_QC=0
         shift 1
 
     elif [ ${1} = -bet_only ] ; then
@@ -407,6 +413,7 @@ while [ $# != 0 ] ; do
         DO_MODEL=0
         DO_CONTRAST=0
         DO_APPLYREG=0
+DO_QC=0
         shift 1
     elif [ ${1} = -rest_conn_only ] ; then 
         DO_BET=0
@@ -423,6 +430,7 @@ while [ $# != 0 ] ; do
         DO_CONTRAST=0
         DO_APPLYREG=0
         DO_RESTING=1
+DO_QC=0
 	shift 1
     elif [ ${1} = -no_resting_gm_mask ] ; then 
         RESTING_GM_MASK=0
@@ -442,6 +450,7 @@ DO_GBC=1
         DO_MODEL=0
         DO_CONTRAST=0
         DO_APPLYREG=0
+DO_QC=0
 	shift 1
     elif [ ${1} = -ppi_and_reg_only ] ; then
         DO_BET=0
@@ -456,6 +465,7 @@ DO_GBC=1
         DO_MODEL=0
         DO_CONTRAST=0
         DO_APPLYREG=0
+DO_QC=0
         shift 1
     elif [ ${1} = -glm_only ] ; then
         DO_BET=0
@@ -470,6 +480,7 @@ DO_GBC=1
         DO_MODEL=1
         DO_CONTRAST=1
         DO_APPLYREG=1
+DO_QC=0
 	shift 1
     elif [ $1 = -deleteMaskOrient ] ; then
         DELETE_MASK_ORIENT=1
@@ -1039,6 +1050,11 @@ if [ $DO_SMOOTH = 1 ] ; then
 
 fi
 #-------------------Apply low-pass filter---------------//
+if [ $DO_QC = 1 ] ; then
+
+    ${ETKINLAB_DIR}/bin/analysis_pipeline_qc.sh $FUNC_DATA_ORIG ${OUTPUTDIR}
+fi
+
 #resting flag trumps others
 if [ $DO_RESTING = 0 ] ; then 
 
@@ -2025,8 +2041,23 @@ ${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${ATLAS_CONN} ${par
 	#	echo "	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC"  >>${OUTPUTDIR}/log.txt
 	#	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC
 
-		
-	#clean up the motion residuals                                                                                                                                                   
+
+
+#run_alff
+{
+echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --tr=${TR} -d ${delVols}
+} >> ${OUTPUTDIR}/log.txt
+
+
+${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --tr=${TR} -d ${delVols}
+
+
+
+
+
+	#clean up the motion residuals
         if [ $DO_DEL_FILTFUNC_RES = 1 ] ; then
             if [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/${atlas_name}.fc_mni/filtered_func_data` = 1 ] ; then
                 ${FSLDIR}/bin/imrm ${OUTPUTDIR}/${atlas_name}.fc_mni/filtered_func_data
