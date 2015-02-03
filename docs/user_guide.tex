@@ -139,7 +139,7 @@ If you'd like to view the difference FNIRT adds to the brain mask you can overla
 \end{alltt}
 Let's check the structural to MNI space registration,
  \begin{alltt}
-\indent  fslview data/standard/MNI152_T1_2mm  reg/highres2standard_warped.nii.gz
+\indent  fslview \$\{FSLDIR\}/data/standard/MNI152_T1_2mm  reg/highres2standard_warped.nii.gz
 \end{alltt}
 Checking tissue segmentation,
  \begin{alltt}
@@ -183,7 +183,8 @@ analysis\_pipeline.sh  {\bf-resting  -no_resting_gm_mask -resting\_first\_region
 \hspace*{0.5in} -output\_extension <analysis\_directory\_extension>  -motion -tr <TR> \textbackslash  \\
 \hspace*{0.5in} -deleteVolumes <Number\_of\_Volumes\_to\_Delete>
 \end{alltt}
-\begin{description}
+\begin{subsubsection}{\bf analysis\_pipeline.sh options: }
+\begin{description} 
 	\item [-fc\_rois\_native, -fc\_rois\_mni  ]  : Choose whether to perform connectivity in native functional space or MNI. Not all features are implemented for MNI space analysis.
 	\item [-resting] :  Do resting analysis.
 	\item [-resting\_first\_regions ] : Include individualized subcortical segmentations.
@@ -194,7 +195,7 @@ analysis\_pipeline.sh  {\bf-resting  -no_resting_gm_mask -resting\_first\_region
 	\end{description}
 
 \end{description}
-
+\end{subsubsection}
 
 
 \begin{subsubsection}{Example}
@@ -270,5 +271,13 @@ The data structure mostly follows that laid out in FSL with some obvious differe
 \end{section}
 
 \end{chapter}
+
+\begin{chapter}{Pipeline Parameters}
+		\begin{description}
+			\item[-appendToAnalysis <directory> ] : Allows you to add new models/fc/ppi to previously processed data. Used in conjuction with other run run options such as -glm_only,-ppi_only,-rest_conn_only
+		\end{description}
+
+
+\end{capter }
 
 \end{document}

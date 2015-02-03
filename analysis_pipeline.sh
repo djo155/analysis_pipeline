@@ -1,3 +1,4 @@
+
 #!/bin/bash 
 #
 #!/bin/sh
@@ -630,7 +631,7 @@ if [ $APPEND_ANALYSIS = 0 ] ; then
         OUTPUTDIR=${OUTPUTDIR_BASE}/${temp}
     fi
 
-
+    #add "+" until you get a non-existent directory name
     while [ -d ${OUTPUTDIR}.${OUT_EXT} ] ; do
         OUTPUTDIR=${OUTPUTDIR}+
     done
@@ -846,7 +847,6 @@ fi
 echo "\n----------Done Structural Processing-------------\n"
 
 #ALL FUNCTIONAL STUFF STARTS HERE
-#------------------DO SPM MOTION Correction-----------------------------//
 echo "\n----------Start Functional Processing-------------\n"
 if [ $RESTING_VOLS -gt 0 ]; then
     echo " ${FSLDIR}/bin/fslroi $FUNC_DATA ${OUTPUTDIR}/prefiltered_func_data 0 $RESTING_VOLS" >>${OUTPUTDIR}/log.txt
@@ -980,7 +980,7 @@ if [ $DO_MC = 1 ] ; then
     fi
 fi
 
-#------------Remove Gloval Signal------------------------------//
+#------------Remove Global Signal------------------------------//
 if [ $DO_GLOBAL_SIG = 1 ] ; then 
     if [ $VERBOSE ] ; then
         echo "Regressing out global signal (OLS using fsl_glm)..."
@@ -2013,7 +2013,12 @@ echo "${FSLDIR}/bin/applywarp -i ${INPUT_DATA} -r  ${STANDARD_BRAIN} -w ${OUTPUT
 						${FSLDIR}/bin/applywarp -i ${INPUT_DATA} -r  ${STANDARD_BRAIN} -w ${OUTPUTDIR}/reg/highres2standard_warp --premat=${OUTPUTDIR}/reg/example_func2highres.mat -m /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o  ${INPUT_DATA}_2_mni   -d float 
 						INPUT_DATA=${INPUT_DATA}_2_mni
 						echo "Run connectivity "
-						${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${ATLAS_CONN} --atlas4D=${OUTPUTDIR}/${atlas_name}.fc_mni/labels.txt -m  /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
+                        NvolsA=`${FSLDIR}/bin/fslnvols ${ATLAS_CONN}`
+                        params4D=""
+if [ $NvolsA -gt 1 ] ; then
+params4D="--atlas4D=${OUTPUTDIR}/${atlas_name}.fc_mni/labels.txt"
+fi
+${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${ATLAS_CONN} ${params4D} -m  /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
 
 		fi
 	#	echo RUN GBC 
