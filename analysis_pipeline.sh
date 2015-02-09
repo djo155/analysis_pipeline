@@ -112,8 +112,6 @@ function func_check_param {
 
 }
 
-#shows what machien ran, handy for debugging grid
-hostname >> ${OUTPUTDIR}/log.txt 
 
 NSESSIONS=0
 #all input options need to start with "-"
@@ -656,6 +654,8 @@ else
     fi
     
 fi
+#shows what machien ran, handy for debugging grid
+hostname >> ${OUTPUTDIR}/log.txt
 
 
 if [ $DO_MODEL = 1 ]; then
@@ -1052,7 +1052,7 @@ fi
 #-------------------Apply low-pass filter---------------//
 if [ $DO_QC = 1 ] ; then
 
-    ${ETKINLAB_DIR}/bin/analysis_pipeline_qc.sh $FUNC_DATA_ORIG ${OUTPUTDIR}
+    ${ANALYSIS_PIPE_DIR}/analysis_pipeline_qc.sh $FUNC_DATA_ORIG ${OUTPUTDIR}
 fi
 
 #resting flag trumps others
@@ -1922,12 +1922,12 @@ fi
 	#run_alff
 	{
 	    echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
-	    echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --tr=${TR} -d ${delVols}
+	    echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
 	} >> ${OUTPUTDIR}/log.txt
 
 
 	${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
-	${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --tr=${TR} -d ${delVols}
+	${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
 
 
 	#do transform to mni space 
@@ -2026,7 +2026,7 @@ fi
 			fi
 #XFM TO standard space 
 echo "${FSLDIR}/bin/applywarp -i ${INPUT_DATA} -r  ${STANDARD_BRAIN} -w ${OUTPUTDIR}/reg/highres2standard_warp --postmat=${OUTPUTDIR}/reg/example_func2highres.mat -m ${BRAIN_MASK_MNI} -o  ${INPUT_DATA}_2_mni   -d float"
-						${FSLDIR}/bin/applywarp -i ${INPUT_DATA} -r  ${STANDARD_BRAIN} -w ${OUTPUTDIR}/reg/highres2standard_warp --premat=${OUTPUTDIR}/reg/example_func2highres.mat -m /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o  ${INPUT_DATA}_2_mni   -d float 
+						${FSLDIR}/bin/applywarp -i ${INPUT_DATA} -r  ${STANDARD_BRAIN} -w ${OUTPUTDIR}/reg/highres2standard_warp --premat=${OUTPUTDIR}/reg/example_func2highres.mat -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o  ${INPUT_DATA}_2_mni   -d float 
 						INPUT_DATA=${INPUT_DATA}_2_mni
 						echo "Run connectivity "
                         NvolsA=`${FSLDIR}/bin/fslnvols ${ATLAS_CONN}`
@@ -2034,7 +2034,7 @@ echo "${FSLDIR}/bin/applywarp -i ${INPUT_DATA} -r  ${STANDARD_BRAIN} -w ${OUTPUT
 if [ $NvolsA -gt 1 ] ; then
 params4D="--atlas4D=${OUTPUTDIR}/${atlas_name}.fc_mni/labels.txt"
 fi
-${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${ATLAS_CONN} ${params4D} -m  /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
+${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${ATLAS_CONN} ${params4D} -m  ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
 
 		fi
 	#	echo RUN GBC 
@@ -2045,13 +2045,13 @@ ${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${ATLAS_CONN} ${par
 
 #run_alff
 {
-echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
-echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --tr=${TR} -d ${delVols}
+echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
 } >> ${OUTPUTDIR}/log.txt
 
 
-${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
-${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m /usr/local/fsl//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --tr=${TR} -d ${delVols}
+${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff_rms --tr=${TR} --use_rms -d ${delVols}
 
 
 
