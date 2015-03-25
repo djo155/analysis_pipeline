@@ -75,6 +75,10 @@ function func_createSPM_JobFile_smooth {
 
 #all input options need to start with "-"
 
+if [ $# = 0 ] ; then 
+    Usage
+fi
+
 #These variables store IO options
 jobname=""
 OUTPUTDIR=""

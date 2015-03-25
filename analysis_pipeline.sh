@@ -433,8 +433,9 @@ DO_QC=0
     elif [ ${1} = -no_resting_gm_mask ] ; then 
         RESTING_GM_MASK=0
         shift 1
-elif [ ${1} -doGBC ] ; then
+elif [ ${1} = -doGBC ] ; then
 DO_GBC=1
+shift 1
     elif [ ${1} = -ppi_only ] ; then
         DO_BET=0
 	DO_DELVOLS=0
@@ -655,6 +656,7 @@ else
     
 fi
 #shows what machien ran, handy for debugging grid
+hostname
 hostname >> ${OUTPUTDIR}/log.txt
 
 
