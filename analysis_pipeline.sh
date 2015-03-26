@@ -325,7 +325,7 @@ while [ $# != 0 ] ; do
         shift 1
 	#turn off options for pipeline
     elif [ ${1} = -reg_info ]; then 
-        REG_ETKIN_DIR=${2}
+        REG_ETKIN_DIR=`readlink -f ${2}`
         REG_EXISTS=1;
         shift 2
     elif [ ${1} = -fc_rois_native ] ; then 
