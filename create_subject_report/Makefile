@@ -18,12 +18,16 @@ SULIBS=-lmisc_utils
 LIBS+=-lfirst_lib -lmeshclass -lnewimage -lmiscmaths -lprob -lfslio -lniftiio -lznz -lutils -lnewmat  -lz
 FMLIBS= -lshapeModel -lfslvtkio -lmeshclass -lnewimage -lmiscmaths  -lfslio -lniftiio -lznz -lnewmat -lutils -lprob -lz
 
-XFILES=create_subject_report
+XFILES=create_subject_report etkin_snr
 
 
 all:  ${XFILES}
 
 create_subject_report: create_subject_report.o
 	${CXX} ${CXXFLAGS} ${LDFLAGS} -o $@ create_subject_report.o ${LIBS}
+
+etkin_snr: etkin_snr.o
+	${CXX} ${CXXFLAGS} ${LDFLAGS} -o $@ etkin_snr.o ${LIBS}
+
 
 
