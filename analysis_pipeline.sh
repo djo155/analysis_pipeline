@@ -78,6 +78,7 @@ Usage() {
     echo "-do_first_only"
     echo "-temp_deriv"
     echo "-deleteMaskOrient: Delete orientation info from the brain mask for SPM models."
+    echo "-createSPMregressors <matlab_file>: convert design"
     #echo "-jobdir   : Directory where SPM job files and bash scripts will be stored. "
     #echo "-jobname : basename for job file names"
     #echo "-outdir   : parent directory for output data (USE FULL PATH)"
@@ -111,6 +112,9 @@ function func_check_param {
     fi
 
 }
+
+
+DO_CONVERT_DESIGN=0
 
 
 NSESSIONS=0
@@ -232,7 +236,10 @@ while [ $# != 0 ] ; do
     elif [ ${1} = -brain_extract_only ] ; then
         BRAINEXTRACT_ONLY=0
         shift 1
-    elif [ ${1} = -tr ] ; then 
+    elif [ ${1} = -createSPMregressors ] ; then
+        DO_CONVERT_DESIGN=$2
+        shift 2
+    elif [ ${1} = -tr ] ; then
         TR=$2
 	setTR=1
         func_check_param 2 $@
@@ -596,6 +603,21 @@ DO_QC=0
 done
 
 echo "----------------done parsing options---------------"
+
+
+if [ ! $DO_CONVERT_DESIGN = 0 ]; then
+    echo $DESIGN_FILE
+    if [ -f $DESIGN_FILE ];then
+        echo Not Converting Regressors, $DESIGN_FILE does not exist
+    else
+
+    DORG=`pwd`
+    cd `dirname $DO_CONVERT_DESIGN`
+    convNAME=`basename $DO_CONVERT_DESIGN`
+    echo $convNAME | matlab -nojvm
+    cd $DORG
+    fi
+fi
 
 
 #-----FIRST THING TO DO IS MAKE SURE A FUCNTIONAL IMAGE WAS INPUT
@@ -986,11 +1008,23 @@ if [ $DO_MC = 1 ] ; then
     ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/mask -dilF ${OUTPUTDIR}/mask
     ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/prefiltered_func_data_mcf -mas ${OUTPUTDIR}/mask ${OUTPUTDIR}/prefiltered_func_data -odt float
 
-    ${FSLDIR}/bin/imrm ${OUTPUTDIR}/prefiltered_func_data_bet ${OUTPUTDIR}/prefiltered_func_data_mcf
+#moved this below for QC purposes.
+#  ${FSLDIR}/bin/imrm ${OUTPUTDIR}/prefiltered_func_data_bet ${OUTPUTDIR}/prefiltered_func_data_mcf
 
     if [ $VERBOSE ] ; then
 	echo "...done \n"
     fi
+fi
+#-------------------Apply low-pass filter---------------//
+if [ $DO_QC = 1 ] ; then
+
+${ANALYSIS_PIPE_DIR}/analysis_pipeline_qc.sh $FUNC_DATA_ORIG ${OUTPUTDIR}/prefiltered_func_data_mcf ${OUTPUTDIR}
+fi
+
+if [ $DO_MC = 1 ] ; then
+
+    ${FSLDIR}/bin/imrm ${OUTPUTDIR}/prefiltered_func_data_bet ${OUTPUTDIR}/prefiltered_func_data_mcf
+
 fi
 
 #------------Remove Global Signal------------------------------//
@@ -1019,19 +1053,20 @@ if [ $DO_SMOOTH = 1 ] ; then
     fi
     #I'm separating the image smoothing from the model, to add flexibility
     #switch to NIFTI in order to be compatible with SPM.
-    ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/prefiltered_func_data
-    ${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPMsmooth.sh -v $VERBOSE -smooth_mm ${SMOOTH_MM} -jobname ${OUTPUTDIR}/spm_jobs/job_smooth.m -outdir ${OUTPUTDIR} -func_data  ${OUTPUTDIR}/prefiltered_func_data
-
+# ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/prefiltered_func_data
+#   ${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPMsmooth.sh -v $VERBOSE -smooth_mm ${SMOOTH_MM} -jobname ${OUTPUTDIR}/spm_jobs/job_smooth.m -outdir ${OUTPUTDIR} -func_data  ${OUTPUTDIR}/prefiltered_func_data
+${ANALYSIS_PIPE_DIR}/spm_smooth/spm_smooth -i ${OUTPUTDIR}/prefiltered_func_data -w ${SMOOTH_MM} -o ${OUTPUTDIR}/prefiltered_func_data
     if [ $VERBOSE = 1 ] ; then 
-	echo "Done Smoothing, write over prefiltered_func_data"
-	echo "${FSLDIR}/bin/immv ${OUTPUTDIR}/sprefiltered_func_data ${OUTPUTDIR}/prefiltered_func_data"
+	echo "Done Smoothing with c++ spm_smooth (not actually spm)"
     fi
-    if [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/sprefiltered_func_data` = 0  ] ; then
-	echo "ERROR: Smoothing using SPM failed."
-	exit 1
-    fi
+#echo "${FSLDIR}/bin/immv ${OUTPUTDIR}/sprefiltered_func_data ${OUTPUTDIR}/prefiltered_func_data"
+#   fi
+#   if [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/sprefiltered_func_data` = 0  ] ; then
+#	echo "ERROR: Smoothing using SPM failed."
+#	exit 1
+#   fi
 
-    ${FSLDIR}/bin/immv ${OUTPUTDIR}/sprefiltered_func_data ${OUTPUTDIR}/prefiltered_func_data
+#   ${FSLDIR}/bin/immv ${OUTPUTDIR}/sprefiltered_func_data ${OUTPUTDIR}/prefiltered_func_data
 
     
 
@@ -1050,11 +1085,6 @@ if [ $DO_SMOOTH = 1 ] ; then
         echo "...done \n"
     fi
 
-fi
-#-------------------Apply low-pass filter---------------//
-if [ $DO_QC = 1 ] ; then
-
-    ${ANALYSIS_PIPE_DIR}/analysis_pipeline_qc.sh $FUNC_DATA_ORIG ${OUTPUTDIR}
 fi
 
 #resting flag trumps others
@@ -1631,10 +1661,16 @@ elif [ $DO_RESTING = 1 ] ; then
         
 	echo " ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/prefiltered_func_data -bptf $HP_SIGMA_CUTOFF_VOL $LP_SIGMA_CUTOFF_VOL $INPUT_DATA -odt float"
 
+			echo "${FSLDIR}/bin/fslpspec  ${OUTPUTDIR}/prefiltered_func_data ${INPUT_DATA}_pspec" >> ${OUTPUTDIR}/log.txt
+			${FSLDIR}/bin/fslpspec  ${OUTPUTDIR}/prefiltered_func_data ${INPUT_DATA}_pspec_prefilt
+
+
 	${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/prefiltered_func_data -bptf $HP_SIGMA_CUTOFF_VOL $LP_SIGMA_CUTOFF_VOL $INPUT_DATA -odt float
         echo LOWPASS $LP_FREQ_CUTOFF_HZ $LP_SIGMA_CUTOFF_SEC $LP_SIGMA_CUTOFF_VOL > ${INPUT_DATA}_freq_range.txt 
         echo HIGHPASS $HP_FREQ_CUTOFF_HZ $HP_SIGMA_CUTOFF_SEC $HP_SIGMA_CUTOFF_VOL >> ${INPUT_DATA}_freq_range.txt
         
+				echo "${FSLDIR}/bin/fslpspec $INPUT_DATA ${INPUT_DATA}_pspec" >>  ${OUTPUTDIR}/log.txt
+			${FSLDIR}/bin/fslpspec $INPUT_DATA ${INPUT_DATA}_pspec
 
 	#allows you to filter data without connectiviuty
         if [ $DO_ATLAS_CONN = 0 ] ; then
@@ -1902,6 +1938,9 @@ elif [ $DO_RESTING = 1 ] ; then
 
             echo "${FSLDIR}/bin/fsl_glm --demean -i ${INPUT_DATA} -d ${OUTPUTDIR}/mc/prefiltered_func_data_mcf.par.txt -o ${OUTPUTDIR}/${atlas_name}.fc/mc/motion_betas --out_res=${OUTPUTDIR}/${atlas_name}.fc/mc/motion_residuals"  >>${OUTPUTDIR}/log.txt
             ${FSLDIR}/bin/fsl_glm --demean -i ${INPUT_DATA} -d ${OUTPUTDIR}/mc/prefiltered_func_data_mcf.par.txt -o ${OUTPUTDIR}/${atlas_name}.fc/mc/motion_betas --out_res=${OUTPUTDIR}/${atlas_name}.fc/mc/motion_residuals
+			
+		#	echo "${FSLDIR}/bin/fslpspec ${OUTPUTDIR}/${atlas_name}.fc/mc/motion_residuals ${OUTPUTDIR}/${atlas_name}.fc/mc/motion_residuals_pspec" >>   ${OUTPUTDIR}/log.txt
+	#		${FSLDIR}/bin/fslpspec ${OUTPUTDIR}/${atlas_name}.fc/mc/motion_residuals ${OUTPUTDIR}/${atlas_name}.fc/mc/motion_residuals_pspec
 
             echo "${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/${atlas_name}.fc/mc/motion_residuals -add ${OUTPUTDIR}/${atlas_name}.fc/mc/avg_func ${OUTPUTDIR}/${atlas_name}.fc/mc/motion_residuals -odt float"  >>${OUTPUTDIR}/log.txt
             ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/${atlas_name}.fc/mc/motion_residuals -add ${OUTPUTDIR}/${atlas_name}.fc/mc/avg_func ${OUTPUTDIR}/${atlas_name}.fc/mc/motion_residuals -odt float
@@ -1909,6 +1948,13 @@ elif [ $DO_RESTING = 1 ] ; then
 
             INPUT_DATA=${OUTPUTDIR}/${atlas_name}.fc/mc/motion_residuals
             MOTION_FC="/mc/"
+			
+			echo "${FSLDIR}/bin/fslpspec $INPUT_DATA ${INPUT_DATA}_pspec" >> ${OUTPUTDIR}/log.txt
+			${FSLDIR}/bin/fslpspec $INPUT_DATA ${INPUT_DATA}_pspec
+
+
+			
+			
 
         fi
 
@@ -2025,8 +2071,13 @@ fi
 				INPUT_DATA=${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_residuals
 				MOTION_FC="/mc/"
 
+echo "${FSLDIR}/bin/fslpspec $INPUT_DATA ${INPUT_DATA}_pspec" >> ${OUTPUTDIR}/log.txt
+${FSLDIR}/bin/fslpspec $INPUT_DATA ${INPUT_DATA}_pspec
+
+
+
 			fi
-#XFM TO standard space 
+#XFM TO standard space
 echo "${FSLDIR}/bin/applywarp -i ${INPUT_DATA} -r  ${STANDARD_BRAIN} -w ${OUTPUTDIR}/reg/highres2standard_warp --postmat=${OUTPUTDIR}/reg/example_func2highres.mat -m ${BRAIN_MASK_MNI} -o  ${INPUT_DATA}_2_mni   -d float"
 						${FSLDIR}/bin/applywarp -i ${INPUT_DATA} -r  ${STANDARD_BRAIN} -w ${OUTPUTDIR}/reg/highres2standard_warp --premat=${OUTPUTDIR}/reg/example_func2highres.mat -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o  ${INPUT_DATA}_2_mni   -d float 
 						INPUT_DATA=${INPUT_DATA}_2_mni

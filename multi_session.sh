@@ -312,10 +312,10 @@ if [ $SERIAL = 0 ] ; then
 	    MASK="${OUTPUT}/${modelName}.spm/brain_fnirt_mask_func"
 	fi
 
-        echo ${ANALYSIS_PIPE_DIR}/multi_session_createSPMjob.sh ${OUTPUT}/${modelName}.spm  spm_model ${N_SESSIONS} ${SESSDIRS} ${MATS} $USE_MOTION ${MASK}
+        echo ${ANALYSIS_PIPE_DIR}/multi_session_createSPMjob.sh ${OUTPUT}/${modelName}.spm  spm_model ${TR} ${N_SESSIONS} ${SESSDIRS} ${MATS} $USE_MOTION ${MASK}
 
 
-        MODELID=`$FSLDIR/bin/fsl_sub -q spm.q -l ${OUTPUT}/logs -T 10 -N model -j $XFMID3 ${ANALYSIS_PIPE_DIR}/multi_session_createSPMjob.sh ${OUTPUT}/${modelName}.spm  spm_model ${N_SESSIONS} ${SESSDIRS} ${MATS} $USE_MOTION ${MASK}`
+        MODELID=`$FSLDIR/bin/fsl_sub -q spm.q -l ${OUTPUT}/logs -T 10 -N model -j $XFMID3 ${ANALYSIS_PIPE_DIR}/multi_session_createSPMjob.sh ${OUTPUT}/${modelName}.spm  spm_model ${TR} ${N_SESSIONS} ${SESSDIRS} ${MATS} $USE_MOTION ${MASK}`
 
 
         echo "RUN CONTRAST $OUTPUT"

@@ -7,7 +7,7 @@
 #  Copyright 2012 __MyCompanyName__. All rights reserved.
 function Usage(){
 echo "\n\n"
-echo "multi_session_createSPMjob.sh <rootdir> <jobname(no path)> <N_Sessions> <session_dirs> <regressors> <use_motion> <mask>"
+echo "multi_session_createSPMjob.sh <rootdir> <jobname(no path)> <TR> <N_Sessions> <session_dirs> <regressors> <use_motion> <mask>"
 echo "if use_motion = 0 or 1 "
 echo "\n\n"
 exit 1
@@ -22,6 +22,8 @@ OUT=`basename $1 .m`
 #remove m extension, will add back
 echo OUT - $OUT - $1 
 
+shift 1
+TR=$1
 shift 1
 N_SESSIONS=$1
 shift 1
@@ -78,7 +80,7 @@ echo "% Job configuration created by cfg_util (rev $Rev: 4252 $) ">>$JOBNAME
 echo "%----------------------------------------------------------------------- ">>$JOBNAME
 echo "matlabbatch{1}.spm.stats.fmri_spec.dir = {'${rootdir}'}; ">>$JOBNAME
 echo "matlabbatch{1}.spm.stats.fmri_spec.timing.units = 'secs'; ">>$JOBNAME
-echo "matlabbatch{1}.spm.stats.fmri_spec.timing.RT = 2; ">>$JOBNAME
+echo "matlabbatch{1}.spm.stats.fmri_spec.timing.RT = ${TR}; ">>$JOBNAME
 echo "matlabbatch{1}.spm.stats.fmri_spec.timing.fmri_t = 16; ">>$JOBNAME
 echo "matlabbatch{1}.spm.stats.fmri_spec.timing.fmri_t0 = 1; ">>$JOBNAME
 echo "%% ">>$JOBNAME

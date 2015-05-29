@@ -31,7 +31,8 @@ int do_work( const string & raw_func, const string & maskname ){
         //-------------let's do some SNR stuff--------------------
 //-------FOR SNR STUFF LET OMIT THE FIRST 5 volumes, because we throw away anyways
         const unsigned int Ndiscard = 5 ;
-//        cout<<"start SNR stuff "<<raw_func<<endl;
+//    cout<<"Discarding the first "<<Ndiscard<<" volumes"<<endl;
+//        cout<<"Reading in functional data... "<<raw_func<<endl;
         volume4D<float> raw_fmri;
         read_volume4D(raw_fmri,raw_func);
 
@@ -49,9 +50,9 @@ int do_work( const string & raw_func, const string & maskname ){
         int ysize=raw_fmri.ysize();
         int zsize=raw_fmri.zsize();
         
-//        cout<<"start loading the data"<<endl;
+//        cout<<"start loading the data "<<zsize<<" "<<Nt<<endl;
         //claulctae mean and standard deviations
-        vector< vector<float> > mean_slice_signal(zsize, vector<float>());
+        vector< vector<float> > mean_slice_signal(zsize);
         vector<unsigned int> n_per_slice;
         for (int t=Ndiscard; t<Nt ; t++)
         {
@@ -133,8 +134,8 @@ int do_work( const string & raw_func, const string & maskname ){
         
         SNR/=sxx;
         mask_volume(SNR,mask);
-        save_volume(SNR,"SNR");
-        
+//        save_volume(SNR,"SNR");
+    
         float vsnr=0;//SNR.mean(brain_mask);
 
         //calculate SNR
@@ -152,7 +153,7 @@ int do_work( const string & raw_func, const string & maskname ){
                 }
         vsnr/=Nsnr;
     
-
+    cout<<"vSNR/sSNR "<<ssnr<<" "<<vsnr<<endl;
     
     return 0;
 }
@@ -163,8 +164,8 @@ int main (int argc, const char * argv[])
         usage();
         return 0;
     }
-    string maskname = string(argv[1]);
-    string rawfunc = argv[2];
+    string rawfunc = string(argv[1]);
+    string maskname = string(argv[2]);
     do_work(rawfunc,maskname);
     
     return 0;
