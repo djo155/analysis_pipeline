@@ -33,9 +33,13 @@ source /sw/bin/init.sh
 ### Common options
 The basic options are those which I’ve found that most people use most frequently. They’ve been taken from scripts used from analyses that we have performed. For clarity I’ve used the image extensions in the examples, but they are not necessary.
 
-* -func data func 4D : Proceeded by the 4D functional data (EPI or spiral). -t1 im t1 : Proceeded by the highres structural image (T1 weighted).
+* -func data func 4D : Proceeded by the 4D functional data (EPI or spiral). 
 
-* -reg info : Optional, specified to use existing structural analysis folder. Proceeded by the structural analysis directory. -design : Proceeded by a Matlab .mat file of the design matrix. The internal structure is that specified by SPM.
+* -t1 im t1 : Proceeded by the highres structural image (T1 weighted).
+
+* -reg info : Optional, specified to use existing structural analysis folder. Proceeded by the structural analysis directory. 
+
+*-design : Proceeded by a Matlab .mat file of the design matrix. The internal structure is that specified by SPM.
 
 * -spm contrast : Proceeded by an SPM contrast file (.m file).
 
@@ -52,7 +56,7 @@ I typically run the structural analyses as a separate stage. This is done for 2 
 
 To run the structural analysis,
 
-* analysis_pipeline.sh -struct_only -t1 subjectID struct t1.nii.gz -output extension struct only
+`analysis_pipeline.sh -struct_only -t1 subjectID struct t1.nii.gz -output extension struct only`
 
 ### Notes on Orientation
 Generally speaking the orientation should be that which matches the MNI template. This is the common orientation used by FSL and SPM. This sometimes differs from what’s output by DICOM converters. For example, Freesurfer’s mri convert tool. To re-orient the image I use fslreorient2std, this does require properly set NIFTI headers. Note that the orientation labels for an image will be displayed along side the image in FSLView.
@@ -66,7 +70,7 @@ The following commands assume that you are in the analysis directory. I use **FS
 
 Let’s first check to see if the brain extraction worked.
 
-* fslview struct/orig struct/brain fnirt
+* `fslview struct/orig struct/brain flirt`
 
 If you’d like to view the difference FNIRT adds to the brain mask you can overlay both brains,
 
