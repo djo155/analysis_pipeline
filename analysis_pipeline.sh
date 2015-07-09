@@ -9,7 +9,7 @@ if [ "_${ANALYSIS_PIPE_DIR}" = "_" ] ; then
     echo "Please set environment variable ANALYSIS_PIPE_DIR before running this script"
     exit 1
 fi
-
+AROMADIR=/Volumes/Smurf-Village/SoftwareRepository/ICA-AROMA/
 
 
 
@@ -34,7 +34,7 @@ Usage() {
     echo "-bet_opts   : Options to pass into FSL's BET. Must be in quotation (e.g. -bet_opts \"-f 0.1 -g 0.2\"). "
     echo "-bet_mask   : input mask instead of BET."
     echo "-bet_edit_mask   : input mask for bad BETting (masks bet output)."
-
+    echo "-use_icaaroma : Use ICA aroma for accounting for motion artificats"
     echo "-appendToAnalysis <directory>  : Do brain extraction. This needs to be run as a first step."
     echo "-output_extension <name> : Output directory extension for analysis. "
     echo "-spm_contrast : A contrast script from SPM. You can use their GUI, the save script."
@@ -115,7 +115,7 @@ MACHTYPE=`uname`
 
 DO_CONVERT_DESIGN=0
 
-
+USE_ICAAROMA=0
 NSESSIONS=0
 #all input options need to start with "-"
 FIRST_PPI_REGIONS=""
@@ -249,6 +249,9 @@ while [ $# != 0 ] ; do
         func_check_param 2 $@
 
         shift 2
+    elif [ ${1} = -use_icaaroma ] ; then
+        USE_ICAAROMA=1
+        shift 1
     elif [ ${1} = -xfmUsingLinear ] ; then
 	XFMFLIRT=1
 	shift 1
@@ -600,6 +603,16 @@ DO_QC=0
 
 
 done
+
+if [ $USE_ICAAROMA = 1 ] ; then
+if [ ! -f  ${AROMADIR}/ICA_AROMA.py  ] ; then
+    echo "Could not find ICA_AROMA.py"
+    exit 1
+fi
+fi
+
+
+
 
 echo "----------------done parsing options---------------"
 
@@ -1055,6 +1068,11 @@ if [ $DO_SMOOTH = 1 ] ; then
 # ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/prefiltered_func_data
 #   ${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPMsmooth.sh -v $VERBOSE -smooth_mm ${SMOOTH_MM} -jobname ${OUTPUTDIR}/spm_jobs/job_smooth.m -outdir ${OUTPUTDIR} -func_data  ${OUTPUTDIR}/prefiltered_func_data
 ${ANALYSIS_PIPE_DIR}/bin/${MACHTYPE}/spm_smooth -i ${OUTPUTDIR}/prefiltered_func_data -w ${SMOOTH_MM} -o ${OUTPUTDIR}/prefiltered_func_data
+
+if [ $USE_ICAAROMA = 1 ]; then
+python2.7 ${AROMADIR}/ICA_AROMA.py -in ${OUTPUTDIR}/prefiltered_func_data -o ${OUTPUTDIR}/ica_aroma -a ${OUTPUTDIR}/reg/example_func2highres.mat -w ${OUTPUTDIR}/reg/highres2standard_warp.nii.gz  -mc ${OUTPUTDIR}/mc/prefiltered_func_data_mcf.par.txt
+fi
+
     if [ $VERBOSE = 1 ] ; then 
 	echo "Done Smoothing with c++ spm_smooth (not actually spm)"
     fi
