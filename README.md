@@ -8,7 +8,7 @@ If you are reading this, you should already have access to the analysis pipeline
 
 The follow command will clone the repository,
 
-         git clone https://bitbucket.org/bmpatena/analysis_pipeline
+         `git clone https://bitbucket.org/bmpatena/analysis_pipeline`
 
 This will create a directory with an assortment of files in it needed for you to run the pipeline. Now it’s time to setup your environment variables.
 The file spm defaults.m should be used instead of that distributed by spm. There is two differences: 1) disables the implicit masking (i.e. set threshold to -inf) and 2) defaults.cmdline=true which is used to disable the GUI. The latter is required in order to parallelize/run in background. This file needs to substitute that which is in SPM.
@@ -70,20 +70,20 @@ The following commands assume that you are in the analysis directory. I use **FS
 
 Let’s first check to see if the brain extraction worked.
 
-* `fslview struct/orig struct/brain flirt`
+ `fslview struct/orig struct/brain flirt`
 
 If you’d like to view the difference FNIRT adds to the brain mask you can overlay both brains,
 
-* fslview struct/orig_struct/brain_struct/brain_flirt
+`fslview struct/orig_struct/brain_struct/brain_flirt`
 
 Let’s check the structural to MNI space registration,
 
-* fslview ${FSLDIR}/data/standard/MNI152_T1_2mm reg/highres2standard_warped.nii.gz 
+`fslview ${FSLDIR}/data/standard/MNI152_T1_2mm reg/highres2standard_warped.nii.gz` 
 
 Checking tissue segmentation,
 
-* fslview struct/orig struct/brain_fnirt_seg.nii.gz
+`fslview struct/orig struct/brain_fnirt_seg.nii.gz`
 
 Checking subcortical segmentation,
 
-* fslview struct/orig struct/first all fast firstseg.nii.gz
+`fslview struct/orig struct/first all fast firstseg.nii.gz`
