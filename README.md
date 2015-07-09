@@ -11,15 +11,16 @@ The file spm defaults.m should be used instead of that distributed by spm. There
 ### Setting Up Environment
 It is assumed at this point that FSL has been installed and you environment has been setup. I’ve set these environments computer wide by editing /etc/profile. Otherwise, you can add to you personal profile. From a lab management perspective, the former facilitate consistency across all users. Note that the variable ETKINLAB DIR is set to ANALYSIS PIPE DIR. For distribution, I’ve included builds for the necessary tools within the analysis pipeline directory
 ###Location of the install
-export ANALYSIS PIPE DIR=/PATH TO SRC/analysis pipeline/ export PATH=${ANALYSIS_PIPE_DIR}:${PATH}
-export ${ETKINLAB DIR}=${ANALYSIS PIPE DIR}
+export ANALYSIS_PIPE_DIR=/PATH_TO_SRC/analysis_pipeline/ 
+export PATH=${ANALYSIS_PIPE_DIR}:${PATH}
+export ${ETKINLAB_DIR}=${ANALYSIS_PIPE_DIR}
 ###Location of SPM install used for pipeline.
-export SPM8DIR=/Applications/spm8 sge
+export SPM8DIR=/Applications/spm8_sge
 ###fink
 source /sw/bin/init.sh
 ###Some Notes
 • I use a local copy of SPM for performance issues with network copy; may not be an issue for you.
-￼￼￼￼￼￼￼￼￼￼￼￼￼￼￼1
+￼￼￼￼￼￼￼￼￼￼￼￼￼￼
 • SPM image IO is not very friendly with network file system, this may be a cause of slow down if too many parallel instances exist.
 • source /sw/bin/init.sh is only need for OSX. fink is used to install a version of readlink that is consistent with linux.
 
