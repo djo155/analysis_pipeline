@@ -44,8 +44,10 @@ The basic options are those which I’ve found that most people use most frequen
 
 ### Running Structural Analysis
 I typically run the structural analyses as a separate stage. This is done for 2 reasons: 1) To be able to QC the registration prior to proceeding with first level models. 2) With multiple functional tasks, each can just reference (and link to) this analysis. This saves a lot of computation time. Before running, please see the notes on orientation below. Orientation of the images are assumed to be handled in advance and is not accounted for in these scripts.
+
 To run the structural analysis,
-analysis_pipeline.sh -struct_only -t1 subjectID struct t1.nii.gz -output extension struct only
+
+* analysis_pipeline.sh -struct_only -t1 subjectID struct t1.nii.gz -output extension struct only
 
 ### Notes on Orientation
 Generally speaking the orientation should be that which matches the MNI template. This is the common orientation used by FSL and SPM. This sometimes differs from what’s output by DICOM converters. For example, Freesurfer’s mri convert tool. To re-orient the image I use fslreorient2std, this does require properly set NIFTI headers. Note that the orientation labels for an image will be displayed along side the image in FSLView.
@@ -55,12 +57,25 @@ Radiological vs Neurological
 ***PLEASE BE VERY CAREFUL with left/right orientation. Although, to my knowledge, FSL handles the Radiological vs Neurological orientation internally and is accounted for in all tools, this may not be the case for all tools. By default, we convert everything into Radiological format upon reconstruction. ***CAUTION*** should be take when doing this since it may not be evident when done incorrectly. Refer to http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Fslutils for more details.
 
 ### Checking your data
-The following commands assume that you are in the analysis directory. I use FSLView to overlay and check images. Let’s first check to see if the brain extraction worked.
-fslview struct/orig struct/brain fnirt
+The following commands assume that you are in the analysis directory. I use **FSLView** to overlay and check images. 
+
+Let’s first check to see if the brain extraction worked.
+
+* fslview struct/orig struct/brain fnirt
+
 If you’d like to view the difference FNIRT adds to the brain mask you can overlay both brains,
-fslview struct/orig struct/brain struct/brain fnirt
+
+* fslview struct/orig_struct/brain_struct/brain_flirt
+
 Let’s check the structural to MNI space registration,
-fslview ${FSLDIR}/data/standard/MNI152_T1_2mm reg/highres2standard_warped.nii.gz Checking tissue segmentation,
-fslview struct/orig struct/brain fnirt seg.nii.gz
+
+* fslview ${FSLDIR}/data/standard/MNI152_T1_2mm reg/highres2standard_warped.nii.gz 
+
+Checking tissue segmentation,
+
+* fslview struct/orig struct/brain_fnirt_seg.nii.gz
+
 Checking subcortical segmentation,
-fslview struct/orig struct/first all fast firstseg.nii.gz
+
+* fslview struct/orig struct/first all fast firstseg.nii.gz
+
