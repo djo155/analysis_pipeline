@@ -1,4 +1,3 @@
-
 #!/bin/bash 
 #
 #!/bin/sh
@@ -112,7 +111,7 @@ function func_check_param {
     fi
 
 }
-
+MACHTYPE=`uname`
 
 DO_CONVERT_DESIGN=0
 
@@ -1055,7 +1054,7 @@ if [ $DO_SMOOTH = 1 ] ; then
     #switch to NIFTI in order to be compatible with SPM.
 # ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/prefiltered_func_data
 #   ${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPMsmooth.sh -v $VERBOSE -smooth_mm ${SMOOTH_MM} -jobname ${OUTPUTDIR}/spm_jobs/job_smooth.m -outdir ${OUTPUTDIR} -func_data  ${OUTPUTDIR}/prefiltered_func_data
-${ANALYSIS_PIPE_DIR}/spm_smooth/spm_smooth -i ${OUTPUTDIR}/prefiltered_func_data -w ${SMOOTH_MM} -o ${OUTPUTDIR}/prefiltered_func_data
+${ANALYSIS_PIPE_DIR}/bin/${MACHTYPE}/spm_smooth -i ${OUTPUTDIR}/prefiltered_func_data -w ${SMOOTH_MM} -o ${OUTPUTDIR}/prefiltered_func_data
     if [ $VERBOSE = 1 ] ; then 
 	echo "Done Smoothing with c++ spm_smooth (not actually spm)"
     fi
@@ -1659,12 +1658,11 @@ elif [ $DO_RESTING = 1 ] ; then
         #imcp ${OUTPUTDIR}/prefiltered_func_data ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/filtered_func_data_bu
         echo "Bandpass filtering the data between $HP_SIGMA_CUTOFF_VOL - $LP_SIGMA_CUTOFF_VOL (volumes)"
         
-	echo " ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/prefiltered_func_data -bptf $HP_SIGMA_CUTOFF_VOL $LP_SIGMA_CUTOFF_VOL $INPUT_DATA -odt float"
 
 			echo "${FSLDIR}/bin/fslpspec  ${OUTPUTDIR}/prefiltered_func_data ${INPUT_DATA}_pspec" >> ${OUTPUTDIR}/log.txt
 			${FSLDIR}/bin/fslpspec  ${OUTPUTDIR}/prefiltered_func_data ${INPUT_DATA}_pspec_prefilt
 
-
+   echo " ${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/prefiltered_func_data -bptf $HP_SIGMA_CUTOFF_VOL $LP_SIGMA_CUTOFF_VOL $INPUT_DATA -odt float" >> ${OUTPUTDIR}/log.txt
 	${FSLDIR}/bin/fslmaths ${OUTPUTDIR}/prefiltered_func_data -bptf $HP_SIGMA_CUTOFF_VOL $LP_SIGMA_CUTOFF_VOL $INPUT_DATA -odt float
         echo LOWPASS $LP_FREQ_CUTOFF_HZ $LP_SIGMA_CUTOFF_SEC $LP_SIGMA_CUTOFF_VOL > ${INPUT_DATA}_freq_range.txt 
         echo HIGHPASS $HP_FREQ_CUTOFF_HZ $HP_SIGMA_CUTOFF_SEC $HP_SIGMA_CUTOFF_VOL >> ${INPUT_DATA}_freq_range.txt
@@ -1958,24 +1956,24 @@ elif [ $DO_RESTING = 1 ] ; then
 
         fi
 
-        echo "${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}" >>${OUTPUTDIR}/log.txt
+        echo "${ETKINLAB_DIR}/bin/${MACHTYPE}/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}" >>${OUTPUTDIR}/log.txt
 	# ${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
-	 ${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
+	 ${ETKINLAB_DIR}/bin/${MACHTYPE}/atlas_connectivity  -i  ${INPUT_DATA} -a ${OUTPUTDIR}/${atlas_name}.fc/${atlas_name}_native --atlas4D=${OUTPUTDIR}/${atlas_name}.fc/labels.txt -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
 if [ $DO_GBC = 1 ] ; then
 echo RUN GBC HERE 
 	#run gbc
-	echo "	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC"  >>${OUTPUTDIR}/log.txt
-	${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC
+	echo "	${ETKINLAB_DIR}/bin/${MACHTYPE}/${MACHTYPE}/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC"  >>${OUTPUTDIR}/log.txt
+	${ETKINLAB_DIR}/bin/${MACHTYPE}/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC
 fi
 	#run_alff
 	{
-	    echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
-	    echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
+	    echo ${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+	    echo ${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
 	} >> ${OUTPUTDIR}/log.txt
 
 
-	${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
-	${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
+	${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+	${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
 
 
 	#do transform to mni space 

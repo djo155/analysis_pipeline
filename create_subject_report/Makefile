@@ -1,10 +1,10 @@
 # $Id: Makefile,v 1.1.1.1 2010/08/18 16:44:15 brian Exp $
 include ${FSLCONFDIR}/default.mk
 
-CC = llvm-gcc
-CXX = llvm-g++
-ARCHFLAGS = -arch x86_64
-ARCHLDFLAGS = -arch x86_64
+#CC = llvm-gcc
+#CXX = llvm-g++
+#ARCHFLAGS = -arch x86_64
+#ARCHLDFLAGS = -arch x86_64
 
 
 PROJNAME = create_subject_report

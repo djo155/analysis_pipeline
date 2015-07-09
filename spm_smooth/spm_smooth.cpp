@@ -68,7 +68,7 @@ void  spm_kernel(volume<float> & kern_out,  const float & fwhm, const float & xd
 //    cout<<"s_x "<<s_x<<endl;
 //    cout<<"w123 "<<w1_x<<" "<<w2_x<<" "<<w3_x<<endl;
 //
-    volume<float>* kern;
+    volume<float>* kern=NULL;
     
     int xlim  = roundf(6*s1_x);
     if (dim == 0 )
@@ -113,7 +113,7 @@ void  spm_kernel(volume<float> & kern_out,  const float & fwhm, const float & xd
 
     kern_out = *kern;
 //    return kern_out;
-    delete kern;
+    if (kern != NULL) delete kern;
 }
 
 int do_work( const string & inname, const float & fwhm, const string & outname ){

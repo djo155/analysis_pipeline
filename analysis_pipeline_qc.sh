@@ -6,7 +6,7 @@ function Usage(){
 
 }
 
-
+MACHTYPE=`uname`
 
 
 ANADIR=`dirname $0`
@@ -199,7 +199,7 @@ cp ${ANALYSISDIR}/mc/*.png ${QCDIR}/
 echo "Creating HTML ${QCDIR}/index.html "
 #clean
 rm -f ${QCDIR}/index.html ${QCDIR}/summary.csv  ${QCDIR}/summaryheader.csv
-#echo ${ANADIR}/create_subject_report/create_subject_report ${QCDIR}/index ${QCDIR}/summary $RAW_FUNC $MC_CORRECTED $ANALYSISDIR
+#echo ${ANADIR}/bin/${MACHTYPE}/create_subject_report/create_subject_report ${QCDIR}/index ${QCDIR}/summary $RAW_FUNC $MC_CORRECTED $ANALYSISDIR
 
 ${ANADIR}/create_subject_report/create_subject_report ${QCDIR}/index ${QCDIR}/summary $RAW_FUNC $MC_CORRECTED $ANALYSISDIR
 
