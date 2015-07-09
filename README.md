@@ -27,19 +27,19 @@ source /sw/bin/init.sh
 ### Common options
 The basic options are those which I’ve found that most people use most frequently. They’ve been taken from scripts used from analyses that we have performed. For clarity I’ve used the image extensions in the examples, but they are not necessary.
 
--func data func 4D : Proceeded by the 4D functional data (EPI or spiral). -t1 im t1 : Proceeded by the highres structural image (T1 weighted).
+* -func data func 4D : Proceeded by the 4D functional data (EPI or spiral). -t1 im t1 : Proceeded by the highres structural image (T1 weighted).
 
--reg info : Optional, specified to use existing structural analysis folder. Proceeded by the structural analysis directory. -design : Proceeded by a Matlab .mat file of the design matrix. The internal structure is that specified by SPM.
+* -reg info : Optional, specified to use existing structural analysis folder. Proceeded by the structural analysis directory. -design : Proceeded by a Matlab .mat file of the design matrix. The internal structure is that specified by SPM.
 
--spm contrast : Proceeded by an SPM contrast file (.m file).
+* -spm contrast : Proceeded by an SPM contrast file (.m file).
 
--output extension Analysis : Proceed by the extension that will be used for the output. It combined the name specified by -func data and append a ”.” plus whatever extensions. ”+” characters will be prepended in the case the directory exists. e.g func 4D.Analysis.
+* -output extension Analysis : Proceed by the extension that will be used for the output. It combined the name specified by -func data and append a ”.” plus whatever extensions. ”+” characters will be prepended in the case the directory exists. e.g func 4D.Analysis.
 
--model name ModelName : Proceed by a name. A folder, ModelName.spm will be created in the output directory, this contains the final SPM analysis.
+* -model name ModelName : Proceed by a name. A folder, ModelName.spm will be created in the output directory, this contains the final SPM analysis.
 
--motion : No arguments. This options indicates to the pipeline to include motion regressors first level model.
+* -motion : No arguments. This options indicates to the pipeline to include motion regressors first level model.
 
--tr : Proceeded by a number. The number is the TR from the acquisition sequence in seconds(time between time points). -deleteVolumes : Proceeded by an integer. The number of volumes to be deleted from the beginning of the time series.
+* -tr : Proceeded by a number. The number is the TR from the acquisition sequence in seconds(time between time points). -deleteVolumes : Proceeded by an integer. The number of volumes to be deleted from the beginning of the time series.
 
 ### Running Structural Analysis
 I typically run the structural analyses as a separate stage. This is done for 2 reasons: 1) To be able to QC the registration prior to proceeding with first level models. 2) With multiple functional tasks, each can just reference (and link to) this analysis. This saves a lot of computation time. Before running, please see the notes on orientation below. Orientation of the images are assumed to be handled in advance and is not accounted for in these scripts.
@@ -63,5 +63,3 @@ fslview ${FSLDIR}/data/standard/MNI152_T1_2mm reg/highres2standard_warped.nii.gz
 fslview struct/orig struct/brain fnirt seg.nii.gz
 Checking subcortical segmentation,
 fslview struct/orig struct/first all fast firstseg.nii.gz
-
-
