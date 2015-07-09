@@ -59,7 +59,7 @@ I typically run the structural analyses as a separate stage. This is done for 2 
 
 To run the structural analysis,
 
-`analysis_pipeline.sh -struct_only -t1 subjectID struct t1.nii.gz -output extension struct only`
+`analysis_pipeline.sh -struct_only -t1 subjectID_struct_t1.nii.gz -output_extension struct_only`
 
 ### Notes on Orientation
 Generally speaking the orientation should be that which matches the MNI template. This is the common orientation used by FSL and SPM. This sometimes differs from what’s output by DICOM converters. For example, Freesurfer’s mri convert tool. To re-orient the image I use fslreorient2std, this does require properly set NIFTI headers. Note that the orientation labels for an image will be displayed along side the image in FSLView.
