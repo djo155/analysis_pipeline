@@ -23,11 +23,14 @@ export ${ETKINLAB_DIR}=${ANALYSIS_PIPE_DIR}
 export SPM8DIR=/Applications/spm8_sge
 ###fink
 source /sw/bin/init.sh
+
 ###Some Notes
-• I use a local copy of SPM for performance issues with network copy; may not be an issue for you.
+
+* I use a local copy of SPM for performance issues with network copy; may not be an issue for you.
 ￼￼￼￼￼￼￼￼￼￼￼￼￼￼
-• SPM image IO is not very friendly with network file system, this may be a cause of slow down if too many parallel instances exist.
-• source /sw/bin/init.sh is only need for OSX. fink is used to install a version of readlink that is consistent with linux.
+* SPM image IO is not very friendly with network file system, this may be a cause of slow down if too many parallel instances exist.
+
+* `source /sw/bin/init.sh` is only need for OSX. fink is used to install a version of readlink that is consistent with linux.
 
 #Quick Start Guide
 ### Common options
@@ -63,10 +66,16 @@ Generally speaking the orientation should be that which matches the MNI template
 ￼￼￼￼￼￼￼￼￼￼￼￼￼￼3
 
 Radiological vs Neurological
-***PLEASE BE VERY CAREFUL with left/right orientation. Although, to my knowledge, FSL handles the Radiological vs Neurological orientation internally and is accounted for in all tools, this may not be the case for all tools. By default, we convert everything into Radiological format upon reconstruction. ***CAUTION*** should be take when doing this since it may not be evident when done incorrectly. Refer to http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Fslutils for more details.
+
+***PLEASE BE VERY CAREFUL with left/right orientation. Although, to my knowledge, FSL handles the Radiological vs Neurological orientation internally and is accounted for in all tools, this may not be the case for all tools. By default, we convert everything into Radiological format upon reconstruction. 
+
+***CAUTION*** should be take when doing this since it may not be evident when done incorrectly. 
+
+Refer to http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Fslutils for more details.
 
 ### Checking your data
-The following commands assume that you are in the analysis directory. I use **FSLView** to overlay and check images. 
+The following commands assume that you are in the analysis directory. 
+I use **FSLView** to overlay and check images. 
 
 Let’s first check to see if the brain extraction worked.
 
