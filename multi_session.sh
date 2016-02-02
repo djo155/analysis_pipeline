@@ -108,6 +108,7 @@ if [ $APPEND = 0 ]; then
 fi
 /bin/mkdir -p ${OUTPUT}
 /bin/mkdir ${OUTPUT}/logs
+chmod a+w ${OUTPUT}/logs
 
 echo OUTPUT $OUTPUT
 

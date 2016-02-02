@@ -112,7 +112,7 @@ function func_check_param {
 
 }
 MACHTYPE=`uname`
-
+echo MACHTYPE : $MACHTYPE
 DO_CONVERT_DESIGN=0
 
 USE_ICAAROMA=0
@@ -620,8 +620,9 @@ echo "----------------done parsing options---------------"
 if [ ! $DO_CONVERT_DESIGN = 0 ]; then
     echo $DESIGN_FILE
     if [ -f $DESIGN_FILE ];then
-        echo Not Converting Regressors, $DESIGN_FILE does not exist
+        echo Not Converting Regressors, $DESIGN_FILE already exist
     else
+        echo Not Converting Regressors, $DESIGN_FILE does not exist
 
     DORG=`pwd`
     cd `dirname $DO_CONVERT_DESIGN`
@@ -1069,9 +1070,18 @@ if [ $DO_SMOOTH = 1 ] ; then
 #   ${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPMsmooth.sh -v $VERBOSE -smooth_mm ${SMOOTH_MM} -jobname ${OUTPUTDIR}/spm_jobs/job_smooth.m -outdir ${OUTPUTDIR} -func_data  ${OUTPUTDIR}/prefiltered_func_data
 ${ANALYSIS_PIPE_DIR}/bin/${MACHTYPE}/spm_smooth -i ${OUTPUTDIR}/prefiltered_func_data -w ${SMOOTH_MM} -o ${OUTPUTDIR}/prefiltered_func_data
 
+echo "Done smoothing"
 if [ $USE_ICAAROMA = 1 ]; then
-python2.7 ${AROMADIR}/ICA_AROMA.py -in ${OUTPUTDIR}/prefiltered_func_data -o ${OUTPUTDIR}/ica_aroma -a ${OUTPUTDIR}/reg/example_func2highres.mat -w ${OUTPUTDIR}/reg/highres2standard_warp.nii.gz  -mc ${OUTPUTDIR}/mc/prefiltered_func_data_mcf.par.txt
+echo python2.7 ${AROMADIR}/ICA_AROMA.py -in `imglob -extension ${OUTPUTDIR}/prefiltered_func_data` -o ${OUTPUTDIR}/ica_aroma -a ${OUTPUTDIR}/reg/example_func2highres.mat -w `imglob -extension ${OUTPUTDIR}/reg/highres2standard_warp`  -mc ${OUTPUTDIR}/mc/prefiltered_func_data_mcf.par.txt
+python2.7 ${AROMADIR}/ICA_AROMA.py -in `imglob -extension ${OUTPUTDIR}/prefiltered_func_data` -o ${OUTPUTDIR}/ica_aroma -a `imglob -extension ${OUTPUTDIR}/reg/example_func2highres.mat -w ${OUTPUTDIR}/reg/highres2standard_warp`  -mc ${OUTPUTDIR}/mc/prefiltered_func_data_mcf.par.txt
+
+${FSLDIR}/bin/immv ${OUTPUTDIR}/ica_aroma/denoised_func_data_nonaggr.nii.gz ${OUTPUTDIR}/prefiltered_func_data
+
 fi
+
+#remove right permission so that it will 
+#hmod a-w `imglob -extension ${OUTPUTDIR}/prefiltered_func_data.nii*`
+
 
     if [ $VERBOSE = 1 ] ; then 
 	echo "Done Smoothing with c++ spm_smooth (not actually spm)"
@@ -1244,6 +1254,13 @@ if [ $DO_RESTING = 0 ] ; then
 
         echo "...done"
     fi
+#re-zip prefiltered func data for storage purposes, this could make it dangerous if running multiple simultaneous models.
+   if [ -f ${OUTPUTDIR}/prefiltered_func_data.nii ] ; then
+            ${FSLDIR}/bin/fslchfiletype NIFTI_GZ ${OUTPUTDIR}/prefiltered_func_data
+        fi
+
+
+
 
     #------------------------------------------------------//
     if [ $DO_APPLYREG = 1 ] ; then 
@@ -1535,7 +1552,7 @@ echo "${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPM_PPI.sh ${OUTPUTDIR}/${MODEL_NAM
 		#run PPI
 		#split to write over the pve weighted time series
 		#                        ${FSLDIR}/bin/fslsplit ${OUTPUTDIR}/prefiltered_func_data ${OUTPUTDIR}/sfmri_grot
-
+		fslchfiletype NIFTI ${OUTPUTDIR}/prefiltered_func_data
                 CURDIR=`pwd`
                 cd ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/
                 echo "cd ${OUTPUTDIR}/${MODEL_NAME}.ppi/${fmask}_con_${con}/ ; run_ppi" | matlab -nodesktop -nosplash
@@ -2057,6 +2074,7 @@ fi
             #Register atlas to native space
 			USED_ATLAS=1
 	      label=1
+	     
         if [ -f ${OUTPUTDIR}/${atlas_name}.fc_mni/labels.txt ] ; then 
             /bin/rm ${OUTPUTDIR}/${atlas_name}.fc_mni/labels.txt
         fi
@@ -2103,7 +2121,7 @@ echo "${FSLDIR}/bin/applywarp -i ${INPUT_DATA} -r  ${STANDARD_BRAIN} -w ${OUTPUT
 if [ $NvolsA -gt 1 ] ; then
 params4D="--atlas4D=${OUTPUTDIR}/${atlas_name}.fc_mni/labels.txt"
 fi
-${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${ATLAS_CONN} ${params4D} -m  ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
+${ETKINLAB_DIR}/bin/${MACHTYPE}/atlas_connectivity  -i  ${INPUT_DATA} -a ${ATLAS_CONN} ${params4D} -m  ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}${atlas_name}_connectivity ${SEEDS_TARGETS} ${ATLAS_CONN_OPTS}
 
 		fi
 	#	echo RUN GBC 
@@ -2114,13 +2132,13 @@ ${ETKINLAB_DIR}/bin/atlas_connectivity  -i  ${INPUT_DATA} -a ${ATLAS_CONN} ${par
 
 #run_alff
 {
-echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff --tr=${TR} -d ${delVols}
-echo ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
+echo ${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+echo ${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
 } >> ${OUTPUTDIR}/log.txt
 
 
-${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff --tr=${TR} -d ${delVols}
-${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff_rms --tr=${TR} --use_rms -d ${delVols}
+${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff_rms --tr=${TR} --use_rms -d ${delVols}
 
 
 
@@ -2139,8 +2157,8 @@ ${ETKINLAB_DIR}/bin/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152
         #clean up the motion residuals  
         if [ $DO_DEL_MC_RES = 1 ] ; then
             if [ $USE_MOTION = 1 ] ; then 
-                if [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_residuals` = 1 ] ; then 
-                    ${FSLDIR}/bin/imrm ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_residuals
+                if [ `${FSLDIR}/bin/imtest ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_residuals_2_mni` = 1 ] ; then 
+                    ${FSLDIR}/bin/imrm ${OUTPUTDIR}/${atlas_name}.fc_mni/mc/motion_residuals_2_mni
                 fi
             fi
         fi

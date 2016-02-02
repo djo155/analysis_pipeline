@@ -201,7 +201,7 @@ echo "Creating HTML ${QCDIR}/index.html "
 rm -f ${QCDIR}/index.html ${QCDIR}/summary.csv  ${QCDIR}/summaryheader.csv
 #echo ${ANADIR}/bin/${MACHTYPE}/create_subject_report/create_subject_report ${QCDIR}/index ${QCDIR}/summary $RAW_FUNC $MC_CORRECTED $ANALYSISDIR
 
-${ANADIR}/create_subject_report/create_subject_report ${QCDIR}/index ${QCDIR}/summary $RAW_FUNC $MC_CORRECTED $ANALYSISDIR
+${ANADIR}/bin/${MACHTYPE}/create_subject_report ${QCDIR}/index ${QCDIR}/summary $RAW_FUNC $MC_CORRECTED $ANALYSISDIR
 
 if [ $DOMC = 1 ] ; then
    ${FSLDIR}/bin/imrm ${ANALYSISDIR}/report/grot_mcf
