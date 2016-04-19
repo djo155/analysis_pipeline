@@ -8,7 +8,7 @@ If you are reading this, you should already have access to the analysis pipeline
 
 The follow command will clone the repository,
 
-         git clone https://bitbucket.org/bmpatena/analysis_pipeline
+         git clone https://bitbucket.org/etkinlab/analysis_pipeline
 
 This will create a directory with an assortment of files in it needed for you to run the pipeline. Now it’s time to setup your environment variables.
 The file spm defaults.m should be used instead of that distributed by spm. There is two differences: 1) disables the implicit masking (i.e. set threshold to -inf) and 2) defaults.cmdline=true which is used to disable the GUI. The latter is required in order to parallelize/run in background. This file needs to substitute that which is in SPM.
