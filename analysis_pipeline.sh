@@ -1121,9 +1121,9 @@ if [ $DO_RESTING = 0 ] ; then
     #-----------------------DOING MODEL-------------------------------//
     if [ $DO_MODEL = 1 ] ; then 
 
-        if [ -f ${OUTPUTDIR}/prefiltered_func_data.nii.gz ] ; then
-            ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/prefiltered_func_data
-        fi
+   #     if [ -f ${OUTPUTDIR}/prefiltered_func_data.nii.gz ] ; then
+    #        ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/prefiltered_func_data
+     #   fi
 
 
 
@@ -1183,7 +1183,8 @@ if [ $DO_RESTING = 0 ] ; then
             BRAIN_FUNC_MASK=${OUTPUTDIR}/${MODEL_NAME}.spm/brain_fnirt_mask_func.nii
         fi
 
-
+#make sure time series is not zipped
+        ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/prefiltered_func_data
         ${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPMmodel.sh -v $VERBOSE -tr $TR -jobname ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/job_model.m -outdir ${OUTPUTDIR}/${MODEL_NAME}.spm -func_data ${OUTPUTDIR}/prefiltered_func_data -design $DESIGN_FILE  ${MOTION_FILE} -mask $BRAIN_FUNC_MASK -temp_deriv $USE_DERIV
 
 	#               fi
@@ -1255,9 +1256,9 @@ if [ $DO_RESTING = 0 ] ; then
         echo "...done"
     fi
 #re-zip prefiltered func data for storage purposes, this could make it dangerous if running multiple simultaneous models.
-   if [ -f ${OUTPUTDIR}/prefiltered_func_data.nii ] ; then
-            ${FSLDIR}/bin/fslchfiletype NIFTI_GZ ${OUTPUTDIR}/prefiltered_func_data
-        fi
+  # if [ -f ${OUTPUTDIR}/prefiltered_func_data.nii ] ; then
+ #           ${FSLDIR}/bin/fslchfiletype NIFTI_GZ ${OUTPUTDIR}/prefiltered_func_data
+#        fi
 
 
 
@@ -2000,15 +2001,18 @@ echo RUN GBC HERE
 	echo "	${ETKINLAB_DIR}/bin/${MACHTYPE}/${MACHTYPE}/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC"  >>${OUTPUTDIR}/log.txt
 	${ETKINLAB_DIR}/bin/${MACHTYPE}/atlas_connectivity  -i  ${INPUT_DATA}  -m  ${OUTPUTDIR}/struct/brain_fnirt_gmseg_2_example_func -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}gmseg --doGBC
 fi
-	#run_alff
-	{
-	    echo ${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
-	    echo ${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
-	} >> ${OUTPUTDIR}/log.txt
+
+##replaced by stand alone script
+#run_alff
+
+#	{
+#	    echo ${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+#	    echo ${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
+#	} >> ${OUTPUTDIR}/log.txt
 
 
-	${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
-	${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
+#	${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+#	${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${OUTPUTDIR}/mask -o ${OUTPUTDIR}/${atlas_name}.fc/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
 
 
 	#do transform to mni space 
