@@ -1184,7 +1184,9 @@ if [ $DO_RESTING = 0 ] ; then
         fi
 
 #make sure time series is not zipped
+if [ -f ${OUTPUTDIR}/prefiltered_func_data.nii.gz  ] ; then
         ${FSLDIR}/bin/fslchfiletype NIFTI ${OUTPUTDIR}/prefiltered_func_data
+fi
         ${ANALYSIS_PIPE_DIR}/analysis_pipeline_SPMmodel.sh -v $VERBOSE -tr $TR -jobname ${OUTPUTDIR}/${MODEL_NAME}.spm/spm_jobs/job_model.m -outdir ${OUTPUTDIR}/${MODEL_NAME}.spm -func_data ${OUTPUTDIR}/prefiltered_func_data -design $DESIGN_FILE  ${MOTION_FILE} -mask $BRAIN_FUNC_MASK -temp_deriv $USE_DERIV
 
 	#               fi
@@ -2135,14 +2137,14 @@ ${ETKINLAB_DIR}/bin/${MACHTYPE}/atlas_connectivity  -i  ${INPUT_DATA} -a ${ATLAS
 
 
 #run_alff
-{
-echo ${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff --tr=${TR} -d ${delVols}
-echo ${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
-} >> ${OUTPUTDIR}/log.txt
+#{
+#echo ${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+#echo ${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff_rms --use_rms --tr=${TR} -d ${delVols}
+#} >> ${OUTPUTDIR}/log.txt
 
 
-${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff --tr=${TR} -d ${delVols}
-${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff_rms --tr=${TR} --use_rms -d ${delVols}
+#${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff --tr=${TR} -d ${delVols}
+#${ETKINLAB_DIR}/bin/${MACHTYPE}/run_alff -i ${INPUT_DATA} -m ${FSLDIR}//data/standard/MNI152_T1_2mm_brain_mask_dil -o ${OUTPUTDIR}/${atlas_name}.fc_mni/${MOTION_FC}falff_rms --tr=${TR} --use_rms -d ${delVols}
 
 
 
